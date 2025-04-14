@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>네이버 책 검색</title>
+</head>
+<body>
+    <h3>네이버 오픈 API를 활용한 도서 목록</h3>
+    <form action="/book/list" method="get">
+        <input type="text" name="query" placeholder="검색어 입력" />
+        <button type="submit">검색</button>
+    </form>
+    <table>
+        <tr>
+            <th>ISBN</th>
+            <th>이미지</th>
+            <th>제목</th>
+            <th>저자/출판사</th>
+            <th>출판일</th>
+        </tr>
+        <tr th:each="book : ${books}">
+            <td th:text="${book.isbn}">ISBN</td>
+            <td><img th:src="${book.image}" alt="도서 이미지" /></td>
+		</tr>
+	</table>
