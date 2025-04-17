@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+				xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+				layout:decorate="~{fragments/layout}"
+><!-- layout:decorate="~{fragments/layout}" fragments폴더안에  layout 렌더링-->
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+		<div class="container card  my-5   p-3">
+			<h3>MULTIBOARD - 글삭제</h3>
+			<form th:action="@{/board/delete}" method="post" id="writeForm"
+				  onsubmit="return  form()">                
+				<div class="my-3">
+					<label for="bpass" class="form-label">비밀번호</label>
+					<input type="text" name="bpass" id="bpass" class="form-control" />
+					<input type="hidden" name="id" id="id" th:value="${id}" class="form-control" />
+				</div>
+				
+				<div class="my-3  text-end">
+					<input type="submit" value="입력" class="btn btn-dark btn-block">
+					<input type="reset" value="취소"
+						class="btn btn-outline-dark btn-block"> <a
+						th:href="@{/board/list}" class="btn btn-outline-dark btn-block">목록보기</a>
+				</div>
+			</form>
+			<!-- end form -->
+			<script>
+				function form() {
+					let bpass = document.getElementById("bpass");
+
+					if (bpass.value == "") {
+						alert("빈칸입니다");
+						bpass.focus();
+						return false;
+					}
+				}
+			</script>
+		</div>
+	</div>
+	
+<!-- Controller - localhost:8080/test1 -->
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+				xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+				layout:decorate="~{fragments/layout}"
+><!-- layout:decorate="~{fragments/layout}" fragments폴더안에  layout 렌더링-->
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<div layout:fragment="content">
+		<div class="container card  my-5   p-3">
+			<h3>MULTIBOARD - 글수정</h3>
+			<form th:action="@{/board/update}" 
+				  method="post" 
+				  encType="multipart/form-data"
+				  id="writeForm"
+				  onsubmit="return  form()">
+				<div class="my-3">
+					<label for="member" class="form-label">이름</label> 
+					<input type="text" name="member_name" id="member" class="form-control" 
+						   th:value="${dto.member.username}" readonly>
+					<input type="hidden" name="id" id="id"  th:value="${dto.id}" />
+				</div>
+				<div class="my-3">
+					<label for="btitle" class="form-label">제목</label> 
+					<input type="text" name="btitle" id="btitle" class="form-control" 
+						   th:value="${dto.btitle}">
+				</div>
+				<div class="my-3">
+					<label for="bpass" class="form-label">비밀번호</label>
+					<input type="password" name="bpass" id="bpass" class="form-control"
+					th:value="${dto.bpass}" readonly />
+				</div>
+				<div class="my-3">
+					<label for="bcontent" class="form-label">내용</label>
+					<textarea name="bcontent" id="bcontent" cols="60" rows="10"
+						class="form-control" th:text="${dto.bcontent}"></textarea>
+				</div>
+				<div class="my-3"> <!-- 새로운 파일로 수정할때 -->
+					<label for="file" class="form-label">파일</label> 
+					<input type="file" name="file" id="file" class="form-control">
+				</div>
+				<div class="my-3"> <!-- 파일수정 안할때 -->
+					<label for="bfile" class="form-label">파일</label> 
+					<input type="text" name="bfile" id="bfile" 
+						   class="form-control" th:value="${dto.bfile}">
+				</div>
+				<div class="my-3  text-end">
+					<input type="submit" value="입력" class="btn btn-dark btn-block">
+					<input type="reset" value="취소" class="btn btn-outline-dark btn-block"> 
+						<a th:href="@{/board/list}" class="btn btn-outline-dark btn-block">목록보기</a>
+				</div>
+			</form>
+			<!-- end form -->
+			<script>
+				function form() {
+					let member = document.getElementById("member");
+					let btitle = document.getElementById("btitle");
+					let bcontent = document.getElementById("bcontent");
+
+					if (member.value == "") {
+						alert("빈칸입니다");
+						bname.focus();
+						return false;
+					}
+					if (btitle.value == "") {
+						alert("빈칸입니다");
+						btitle.focus();
+						return false;
+					}
+					if (bcontent.value == "") {
+						alert("빈칸입니다");
+						bcontent.focus();
+						return false;
+					}
+				}
+			</script>
+		</div>
+	</div>
+	
+<!-- Controller - localhost:8080/test1 -->
+</body>
+</html>
