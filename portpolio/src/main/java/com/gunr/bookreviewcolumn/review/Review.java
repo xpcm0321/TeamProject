@@ -10,10 +10,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 
-import com.gunr.bookreviewcolumn.bookdata.Bookdata;
 import com.gunr.bookreviewcolumn.medium.Medium;
 import com.gunr.bookreviewcolumn.member.Member;
 
@@ -41,29 +40,23 @@ public class Review {
    @Column(nullable=false)
    private LocalDateTime review_date=LocalDateTime.now(); //작성일
    
+   // member-review
+   @ManyToMany(mappedBy="reviews")
+   private Set<Member> members = new HashSet<>();
+   
+   // review-medium
    @ManyToMany
-   @JoinColumn(name="member_id")
-   private Set<Member> member = new HashSet<>();
+   @JoinTable(name="review_medium",
+   	joinColumns = @JoinColumn(name="review_id"),
+   	inverseJoinColumns = @JoinColumn(name="medium_id")
+   )
+   private Set<Medium> mediums = new HashSet<>();
    
+   // member-review(좋아요)
    @ManyToMany
-   @JoinColumn(name="medium_id")
-   private Set<Medium> medium = new HashSet<>();
-   
-   @ManyToOne
-   @JoinColumn(name="member_id")
-   private Member member_r;
-   
-   @ManyToOne
-   @JoinColumn(name="bookdata_id")
-   private Bookdata bookdata;
-
-
-//   private Long review_hit=0L; //조회수
-//   
-//   private String hashtag; // 태그
-//   
-//   private Long review_like=0L; // 좋아요
-   
-//   @ManyToOne
-//   private Member member;
+   @JoinTable(name = "likes",
+   	joinColumns = @JoinColumn(name = "review_id"),
+   	inverseJoinColumns = @JoinColumn(name = "member_id")
+   )
+   private Set<Member> review_like = new HashSet<>();
 }

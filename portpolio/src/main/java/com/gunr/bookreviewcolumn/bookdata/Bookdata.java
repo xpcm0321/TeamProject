@@ -1,9 +1,7 @@
 package com.gunr.bookreviewcolumn.bookdata;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -12,13 +10,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 import com.gunr.bookreviewcolumn.big.Big;
 import com.gunr.bookreviewcolumn.member.Member;
-import com.gunr.bookreviewcolumn.review.Review;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -29,39 +26,42 @@ import lombok.Setter;
 public class Bookdata {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Long id;  // 번호
 	
 	@Column(nullable=false)
-	private String link;
+	private String link;  // 링크
 	
-	private String image;
+	private String image;  // 이미지
 	
-	private String author;
+	private String author;  // 작가
 	
-	private double price;
+	private double price;  // 가격
 	
-	private String publisher;
+	private String publisher;  // 출판사
 	
-	private String pubdate;
+	private String pubdate;  // 출판날짜
 	
 	@Column(unique=true, nullable=false)	
-	private String isbn;
+	private String isbn;  // isbn
 	
-	private String description;
+	private String description;  // 책설명
 	
-	private String title;
+	private String title;  // 책 제목
 	
 	@Column(updatable = false)
-	private LocalDateTime datatime = LocalDateTime.now();
+	private LocalDateTime datatime = LocalDateTime.now();  // 관리자가 등록한 날짜
 	
 	@ManyToMany
-	@JoinColumn(name="member_id")
-	private Set<Member> member = new HashSet<>();
-	
-	@OneToMany
-	List<Review> review = new ArrayList<>();
+	@JoinTable(name="bookdata_member",
+		joinColumns = @JoinColumn(name="bookdata_id"),
+		inverseJoinColumns = @JoinColumn(name="member_id")
+	)
+	private Set<Member> members = new HashSet<>();
 	
 	@ManyToOne
-	@JoinColumn(name="booktype_id")
 	private Big big;
+	
+	// member-bookdata(찜)
+	@ManyToMany(mappedBy="bookdata_bookmark")
+	private Set<Member> bookmarkPost = new HashSet<>();
 }
