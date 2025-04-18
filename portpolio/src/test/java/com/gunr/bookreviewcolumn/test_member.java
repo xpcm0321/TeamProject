@@ -18,12 +18,12 @@ public class test_member {
 	@Disabled  //@Test
 	public void insert() {
 		Member member = new Member();
-		member.setUsername("user2");
-		member.setNickname("nickname2");
-		member.setPassword("2222");
-		member.setMemberimg("img2");
-		member.setEmail("user2@gmail.com");
-		member.setAge(22);
+		member.setUsername("admin");
+		member.setNickname("admin");
+		member.setPassword("1234");
+		member.setMemberimg("img1");
+		member.setEmail("admin@gmail.com");
+		member.setAge(20);
 		memberRepository.save(member);
 	}
 	
@@ -56,8 +56,8 @@ public class test_member {
 		memberRepository.updateByNicknameAndUsername("nickname-new", "user1");
 	}
 	
-	@Test
+	@Disabled  //@Test
 	public void delete() {
-		memberRepository.deleteByUsernameAndPassword("user2", "2222");
+		memberRepository.deleteByUsernameAndPassword("user1", "11111");
 	}
 }

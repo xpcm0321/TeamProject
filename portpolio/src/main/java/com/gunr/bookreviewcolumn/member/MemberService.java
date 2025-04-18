@@ -2,6 +2,7 @@ package com.gunr.bookreviewcolumn.member;
 
 import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -10,10 +11,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MemberService {
 	private final MemberRepository memberRepository;
-	//private final PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 	
 	//insert - 회원가입
 	public Member insertMember(Member member) {
+		member.setPassword(passwordEncoder.encode(member.getPassword())); // 비번 암호화
 		return memberRepository.save(member);
 	}
 	
@@ -22,9 +24,9 @@ public class MemberService {
 		return memberRepository.findAll();
 	}
 
-	//select - 유저 한명 조회(유저네임)
-	public Member selectUsername(String usernaem) {
-		return memberRepository.findByUsername(usernaem).get();
+	//select
+	public Member selectMember(Long id) {
+		return memberRepository.findById(id).get();
 	}
 	
 	

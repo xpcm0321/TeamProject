@@ -1,6 +1,7 @@
 package com.gunr.bookreviewcolumn.member;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import lombok.Getter;
@@ -25,7 +26,8 @@ public class MemberForm {
 	@NotEmpty(message="이메일은 필수항목입니다.")
 	private String email;
 	
-	@NotEmpty(message="나이는 필수항목입니다.")
-	private String age;
+	@NotNull(message="나이는 필수항목입니다.")
+	private Integer age;
+
 	
 }
