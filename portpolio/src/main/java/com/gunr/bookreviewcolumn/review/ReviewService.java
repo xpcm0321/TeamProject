@@ -1,0 +1,65 @@
+package com.gunr.bookreviewcolumn.review;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.transaction.Transactional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import com.gunr.bookreviewcolumn.member.MemberRepository;
+
+@Service
+public class ReviewService {
+	@Autowired ReviewRepository reviewRepository;
+	@Autowired MemberRepository memberRepository;
+
+	public Page<Review> getPaging(int page){
+		List<Sort.Order> sorts = new ArrayList<>();
+		sorts.add(Sort.Order.desc("id"));
+		
+		Pageable pageable=PageRequest.of(page, 6, Sort.by(sorts));
+		return reviewRepository.findAll(pageable);
+	}
+	
+	public List<Review> findAll(){ //전체리스트
+		return reviewRepository.findAllByOrderByDesc();
+	}
+	
+	@Transactional
+	public Review find(Long id) { //상세보기
+		Review review=reviewRepository.findById(id).get();
+		//review.setReview_hi     t(review.getReview_hit()+1);
+		//reviewRepository.save(review);
+		return review;
+	}
+	public void insert(Review review) {
+		review.setMember( memberRepository.findByUsername(review.getMember().getUsername()).get() );
+		
+		try { review.setReview_ip(InetAddress.getLocalHost().getHostAddress()); }
+		catch (UnknownHostException e) { e.printStackTrace(); }
+		reviewRepository.save(review);
+		
+	}
+	public Review update_view(Long id) {
+		return reviewRepository.findById(id).get();
+	}
+	
+	public int update(Review review) {
+		return reviewRepository.updateById(
+				review.getId(), review.getRating(), 
+				review.getReview_title(), review.getReview_content(), review.getMedium()
+		);
+	}
+	
+	public int delete(Review review) {
+		return reviewRepository.deleteReviewById(review.getId());
+	}
+}
