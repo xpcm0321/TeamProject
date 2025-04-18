@@ -1,11 +1,12 @@
 package com.gunr.bookreviewcolumn.bookdata;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -13,9 +14,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import com.gunr.bookreviewcolumn.big.Big;
 import com.gunr.bookreviewcolumn.member.Member;
+import com.gunr.bookreviewcolumn.review.Review;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -51,17 +54,28 @@ public class Bookdata {
 	@Column(updatable = false)
 	private LocalDateTime datatime = LocalDateTime.now();  // 관리자가 등록한 날짜
 	
+	// OneToMany, ManyToMany, ManyToOne
+	// bookdata-member
 	@ManyToMany
 	@JoinTable(name="bookdata_member",
 		joinColumns = @JoinColumn(name="bookdata_id"),
 		inverseJoinColumns = @JoinColumn(name="member_id")
 	)
-	private Set<Member> members = new HashSet<>();
+	private List<Member> member = new ArrayList<>();
 	
-	@ManyToOne
+	// bookdata-member(찜)
+	@ManyToMany(mappedBy="bookdata_bookmark")
+	private List<Member> bookmarkPost = new ArrayList<>();
+	
+	
+	// bookdata-big
+	//#2. 성능최적화
+	@ManyToOne(fetch=FetchType.LAZY)
 	private Big big;
 	
-	// member-bookdata(찜)
-	@ManyToMany(mappedBy="bookdata_bookmark")
-	private Set<Member> bookmarkPost = new HashSet<>();
+	
+	// bookdata-review
+	@OneToMany(mappedBy="bookdata")
+	List<Review> review = new ArrayList<>();
+	
 }

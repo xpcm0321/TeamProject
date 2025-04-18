@@ -24,6 +24,8 @@ public class Image {
 	
 	private String img;
 	
+	// OneToMany, ManyToMany, ManyToOne
+	// image-member
 	@OneToMany(mappedBy="image")
-	List<Member> member = new ArrayList<>();
+	private List<Member> member = new ArrayList<>();
 }

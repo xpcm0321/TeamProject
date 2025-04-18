@@ -1,7 +1,7 @@
 package com.gunr.bookreviewcolumn.medium;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,10 +28,13 @@ public class Medium {
 	@Column(nullable=false)
 	private String name;  // 이름
 
-	// review-medium
-	@ManyToMany(mappedBy="mediums")
-	private Set<Review> reviews = new HashSet<>();
+	// OneToMany, ManyToMany, ManyToOne
+	// medium-review
+	@ManyToMany(mappedBy="medium")
+	private List<Review> review = new ArrayList<>();
 	
+	
+	// medium-big
 	@ManyToOne
 	private Big big;
 }

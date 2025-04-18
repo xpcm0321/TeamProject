@@ -1,8 +1,8 @@
 package com.gunr.bookreviewcolumn.review;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,7 +12,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 
+import com.gunr.bookreviewcolumn.bookdata.Bookdata;
 import com.gunr.bookreviewcolumn.medium.Medium;
 import com.gunr.bookreviewcolumn.member.Member;
 
@@ -40,9 +42,24 @@ public class Review {
    @Column(nullable=false)
    private LocalDateTime review_date=LocalDateTime.now(); //작성일
    
-   // member-review
-   @ManyToMany(mappedBy="reviews")
-   private Set<Member> members = new HashSet<>();
+   // OneToMany, ManyToMany, ManyToOne
+   // review-member
+   @ManyToMany(mappedBy="review_m")  // Member.class에서 private List<Review> review_m = new ArrayList<>();
+   private List<Member> member_r = new ArrayList<>();
+   
+   // review-member
+   @ManyToOne
+   @JoinColumn(name="member_id")
+   private Member member;  // review
+   
+   // review-member(좋아요)
+   @ManyToMany
+   @JoinTable(name = "likes",
+	   joinColumns = @JoinColumn(name = "review_id"),
+	   inverseJoinColumns = @JoinColumn(name = "member_id")
+	)
+   private List<Member> review_like = new ArrayList<>();
+   
    
    // review-medium
    @ManyToMany
@@ -50,13 +67,11 @@ public class Review {
    	joinColumns = @JoinColumn(name="review_id"),
    	inverseJoinColumns = @JoinColumn(name="medium_id")
    )
-   private Set<Medium> mediums = new HashSet<>();
+   private List<Medium> medium = new ArrayList<>();
    
-   // member-review(좋아요)
-   @ManyToMany
-   @JoinTable(name = "likes",
-   	joinColumns = @JoinColumn(name = "review_id"),
-   	inverseJoinColumns = @JoinColumn(name = "member_id")
-   )
-   private Set<Member> review_like = new HashSet<>();
+   
+   // review-bookdata
+   @ManyToOne
+   @JoinColumn(name="bookdata_id")
+   private Bookdata bookdata;
 }

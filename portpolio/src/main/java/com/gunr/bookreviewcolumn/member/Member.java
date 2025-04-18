@@ -1,8 +1,8 @@
 package com.gunr.bookreviewcolumn.member;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import com.gunr.bookreviewcolumn.bookdata.Bookdata;
 import com.gunr.bookreviewcolumn.image.Image;
@@ -43,7 +44,7 @@ public class Member {
 
 	// 추가
 	@Column(nullable = false)
-	private String memberimg; // 프로필 사진 선택
+	private String memberimg=""; // 프로필 사진 선택
 
 	@Column(unique = true, nullable = false)
 	private String email; // 이메일
@@ -51,31 +52,38 @@ public class Member {
 	@Column(updatable = false, nullable = false)
 	private LocalDateTime datetime = LocalDateTime.now(); // 현재날짜
 
-	// bookdata-member
-	@ManyToMany(mappedBy = "members")
-	private Set<Bookdata> bookdatas = new HashSet<>();
+	// OneToMany, ManyToMany, ManyToOne
+	// member-bookdata
+	@ManyToMany(mappedBy = "member")
+	private List<Bookdata> bookdata = new ArrayList<>();
 
+	// member - bookdata(찜)
+	@ManyToMany
+	@JoinTable(name = "bookmark",
+	joinColumns = @JoinColumn(name = "member_id"),
+	inverseJoinColumns = @JoinColumn(name = "bookdata_id")
+			)
+	private List<Bookdata> bookdata_bookmark = new ArrayList<>(); // bookdata bookmark
+	
+	
 	// member-review
 	@ManyToMany
 	@JoinTable(name = "member_review",
 		joinColumns = @JoinColumn(name = "member_id"),
 		inverseJoinColumns = @JoinColumn(name = "review_id")
 	)
-	private Set<Review> reviews = new HashSet<>();
-
-	@ManyToOne
-	private Image image;
+	private List<Review> review_m = new ArrayList<>();   // member - review
+	
+	// member-review
+	@OneToMany(mappedBy="member")
+	List<Review> review = new ArrayList<>(); // member
 
 	// member - review(좋아요)
 	@ManyToMany(mappedBy = "review_like")
-	private Set<Review> reviewMember = new HashSet<>();
-
-	// member - bookdata(찜)
-	@ManyToMany
-	@JoinTable(name = "bookmark",
-		joinColumns = @JoinColumn(name = "member_id"),
-		inverseJoinColumns = @JoinColumn(name = "bookdata_id")
-	)
-	private Set<Bookdata> bookdata_bookmark = new HashSet<>(); // bookdata bookmark
-
+	private List<Review> reviewMember = new ArrayList<>();
+	
+	
+	// member-image
+	@ManyToOne
+	private Image image;
 }
