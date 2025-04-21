@@ -1,42 +1,87 @@
 <div id="popup">
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+<meta charset="UTF-8">
 <style>
-            table {
-                width: 100%;
-                border-collapse: collapse;
-            }
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
 
-            th, td {
-                border-bottom: 1px solid #555555;
-                padding: 10px;
-            }
-        </style>
+th, td {
+	border-bottom: 1px solid #555555;
+	padding: 10px;
+}
+</style>
 </head>
 <body>
-    <script th:src="@{/js/search.js}"></script>
-    <div class="col-md-12">
-        <h1>���� �˻�</h1>
-        <div class="col-md-4">
-            <form th:action="@{/book-search}" method="post">
-                <input type="text" th:value="${keyword}" name="keyword" placeholder="�������� �Է����ּ���.">
-                <button th:text="�˻�" type="submit"></button>
-            </form>
-        </div>
+	<script th:src="@{/js/search.js}"></script>
+	<div class="col-md-12">
+		<h1>도서 검색</h1>
+		<div class="col-md-4">
+			<input type="text" name="search" id="search" class="form-control"
+				placeholder="도서명을 입력해주세요.">
+		</div>
 
-        <hr>
-        <div>
-            <table class="table">
-                <tbody>
-                <tr th:each="bookDto : ${bookDtoList}" onclick="selectElement(this)" style="cursor : pointer;">
-                    <td><img th:src="@{${bookDto.imageURL}}" width="100" height="150"/></td>
-                    <td th:text="${bookDto.title}">title</td>
-                    <td th:text="${bookDto.author}">authorA</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    </body>
-</html>
+		<hr>
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">도서명</th>
+					<th scope="col">책표지</th>
+					<th scope="col">저자</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- ajax 호출 후 내용 업데이트 -->
+			</tbody>
+		</table>
+		<script th:inline="javascript">
+			$(function(){
+				ajax_api("");
+				
+				$("#search").on("keyup", function(){
+					let searchQuery = $(this).val().trim();
+					if(searchQuery.length>0){
+						$(".book_result").fadeIn();
+						ajax_api(searcjQuery);
+					}
+				});
+			});
+			function ajax_api(search){
+				$.ajax({
+					url:"/naver/booksapi/"+search ,
+					type:"GET",
+					dataType:"json",
+					contentType:"application/json;charset=UTF-8",
+					error:function(xhr, status, msg){alert(status + "/" +msg);},
+					success:function(json){
+						//console.log(json);
+						$(".book_result tbody").empty();
+						if( json && json.items && json.items.length > 0){
+							let items = json.items
+							
+							for(let i=0; i<items.length; i++){
+								// 1. 데이터 가져오기
+								let title = items[i].title;
+								let img = items[i].image;
+								let author = items[i].author;
+								// 2. tbody 행추가	## 템플릿 리터럴 `` (백틱)
+								let row= `
+									<tr>
+										<td>${title}</td>
+										<td><img src="${img}" alt="${title}" style="width:100px; height:auto;" /></td>
+										<td>${author}</td>
+									</tr>
+								`;
+								$(".book_result tbody").append(row);
+							}
+						}// end if
+					}
+				});
+			}
+		</script>
+	</div>
+</body>
+	</html>
 </div>

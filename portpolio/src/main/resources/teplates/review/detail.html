@@ -27,7 +27,7 @@
 			<a class="btn btn-outline-success" th:href="@{/review/list}" >목록보기</a>
 		</div>
 		<hr>
-		<div class="bg-success" style="width: 300px; height: 100px">
+		<div class="bg-success my-5" style="width: 300px; height: 100px">
 			<div class="d-flex">
 				<div class="bg-white" style="width: 70px; height: 90px;"></div>
 				<div class="d-flex flex-column justify-content-center" >
@@ -36,7 +36,18 @@
 				</div>
 			</div>
 		</div>
+		<div class="my-3">
+			<textarea th:text="${dto.review_content}" readonly class="form-control"></textarea>
+		</div>
+		<div class="my-3">
+			<p th:text="{dto.big.title}"></p>
+			<p th:text="{dto.medium.name}"></p>
+		</div>
 		<hr>
+		<div class="d-flex">
+			<h7>좋아요</h7><p>4</p>
+		</div>
+		
 	</div>
 </body>
 </html>

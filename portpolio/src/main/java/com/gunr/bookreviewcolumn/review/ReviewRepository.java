@@ -22,9 +22,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 	
 	@Modifying
 	@Transactional
-	@Query("update Review r set r.rating= :rating, r.review_title= :review_title, r.review_content= :review_content, r.medium= :medium"
+	@Query("update Review r set r.rating= :rating, r.review_title= :review_title, r.review_content= :review_content"
 			+ " where r.id= :id")
-	int updateById(Long id, int rating, String review_title, String review_content, List<Medium> list);
+	int updateById(Long id, int rating, String review_title, String review_content);
 	
 	@Modifying
 	@Transactional

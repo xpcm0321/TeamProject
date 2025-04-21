@@ -55,7 +55,7 @@ public class ReviewService {
 	public int update(Review review) {
 		return reviewRepository.updateById(
 				review.getId(), review.getRating(), 
-				review.getReview_title(), review.getReview_content(), review.getMedium()
+				review.getReview_title(), review.getReview_content()
 		);
 	}
 	

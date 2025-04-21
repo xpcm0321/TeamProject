@@ -40,8 +40,8 @@ public class ReviewController {
 	}
 	
 	@PostMapping("/review/insert") 
-	public String review_post(Review review, Set<Member> member) { 
-		review.setMember_r(member); 
+	public String review_post(Review review, Member member) { 
+		review.setMember(member); 
 		service.insert(review); 
 		return "redirect:/review/list"; 
 	}
