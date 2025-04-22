@@ -17,8 +17,17 @@ import com.gunr.bookreviewcolumn.medium.Medium;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 	Page<Review> findAll(Pageable pageable);
 	
+	// 모든 유저 리뷰 리스트
 	@Query("select r from Review r order by id desc")
 	List <Review> findAllByOrderByDesc();
+	
+	// 내가 쓴 리뷰
+	@Query("select r from Review r where member_id= :member_id order by id desc")
+	List <Review> findMeByOrderByDesc(); 
+	
+	// 내가 좋아요 한 리뷰
+	@Query("select r from Review r where member_id= :member_id and likes= :likes order by id desc")
+	List <Review> findMeLikes();
 	
 	@Modifying
 	@Transactional

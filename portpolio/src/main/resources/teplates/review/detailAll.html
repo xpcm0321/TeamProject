@@ -22,12 +22,8 @@
 			</div>
 		</div>
 		<div class="my-3 text-end">
-			<a class="btn" th:href="@{/review/delete/${id}}" 
-				style="padding: 8px 20px; color: white; background-color: #889F69;">삭제</a>
-			<a class="btn" th:href="@{/review/edit/${id}}" 
-				style="padding: 8px 20px; color: white; background-color: #889F69;">수정</a>
-			<a class="btn" th:href="@{/review/list}" 
-				style="padding: 8px 20px; color: #889F69; border-color: #889F69;" >이전</a>
+			<a th:href="javascript:history.go(-1)" class="btn" 
+				style="padding: 8px 20px; color: white; background-color: #889F69;" >이전</a>
 		</div>
 		<hr>
 		<div class="my-5" style="width: 300px; height: 100px; background-color: #889F69;">
@@ -43,9 +39,11 @@
 			<textarea th:text="${dto.review_content}" readonly class="form-control"></textarea>
 		</div>
 		<div class="my-3">
-			<a style="background-color: #889F69; border-radius: 25%">#대분류태그</a> 
-			<a style="background-color: #889F69; border-radius: 25%">#소분류태그</a>
+			<p th:text="{dto.big.title}"></p>
+			<p th:text="{dto.medium.name}"></p>
 		</div>
+		<a style="background-color: #889F69; border-radius: 25%">#대분류태그</a> 
+		<a style="background-color: #889F69; border-radius: 25%">#소분류태그</a>
 		<hr>
 		<div class="d-flex">
 			<h7>좋아요</h7><p>4</p>

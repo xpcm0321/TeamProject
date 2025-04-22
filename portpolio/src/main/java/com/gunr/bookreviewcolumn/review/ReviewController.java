@@ -59,5 +59,4 @@ public class ReviewController {
 		rttr.addFlashAttribute("msg",msg);
 		return "redirect:/review/detail/" +review.getId();
 	}
-	
 }

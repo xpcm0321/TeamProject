@@ -14,13 +14,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.gunr.bookreviewcolumn.bookdata.BookRepository;
 import com.gunr.bookreviewcolumn.member.MemberRepository;
 
 @Service
 public class ReviewService {
 	@Autowired ReviewRepository reviewRepository;
 	@Autowired MemberRepository memberRepository;
-
+//	@Autowired BookRepository bookRepository;
+	
 	public Page<Review> getPaging(int page){
 		List<Sort.Order> sorts = new ArrayList<>();
 		sorts.add(Sort.Order.desc("id"));
@@ -33,6 +35,14 @@ public class ReviewService {
 		return reviewRepository.findAllByOrderByDesc();
 	}
 	
+	public List<Review> findMe(){ //내가작성한리뷰리스트
+		return reviewRepository.findMeByOrderByDesc();
+	}
+	
+	public List<Review> findLikes(){ //내가좋아요한리뷰
+		return reviewRepository.findMeLikes();
+	}
+	
 	@Transactional
 	public Review find(Long id) { //상세보기
 		Review review=reviewRepository.findById(id).get();
@@ -41,12 +51,14 @@ public class ReviewService {
 		return review;
 	}
 	public void insert(Review review) {
-		review.setMember( memberRepository.findByUsername(review.getMember().getUsername()).get() );
+//		review.setMember( memberRepository.findByUsername(review.getMember().getUser()).get() );
+//		review.setBookdata( memberRepository.findByUsername(review.getMember().getUsername()).get() );
 		
 		try { review.setReview_ip(InetAddress.getLocalHost().getHostAddress()); }
 		catch (UnknownHostException e) { e.printStackTrace(); }
 		reviewRepository.save(review);
-		
+//		insert into review (rating, review_content, review_date, review_ip, review_title, bookdata_id, member_id) 
+//		values (5, 'review_content' , '24-12-12', '0.0.0.0', 'review_title', 1, 1);
 	}
 	public Review update_view(Long id) {
 		return reviewRepository.findById(id).get();
