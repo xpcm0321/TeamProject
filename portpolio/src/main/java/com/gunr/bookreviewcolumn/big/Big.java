@@ -36,6 +36,6 @@ public class Big {
 
 	
 	// big-medium
-	@OneToMany(mappedBy="big" ,   cascade= CascadeType.ALL)
+	@OneToMany(mappedBy="big", cascade= CascadeType.ALL)
 	private List<Medium> medium = new ArrayList<>();
 }

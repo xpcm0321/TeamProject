@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko"	xmlns:th="http://www.thymeleaf.org" 
+				xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+				layout:decorate="~{fragments/layout}">	<!-- ##1 -->
+<head>
+<meta charset="UTF-8">
+<title>아이디 찾기</title>
+<!-- CSRF 토큰 -->
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+	h3{
+		margin-bottom: 30px;
+	}
+	#btn-okay:hover{
+		background-color: rgb(109, 131, 80);
+	}
+	
+	#btn-cancel:hover{
+		color: white !important;
+		background-color: #889F69;
+	}
+	#social-oneclick{
+		width: 50px;
+		height: 50px;
+		border-radius: 50%;
+		margin: 0px 8px 0px 8px;
+	}
+	.btn{
+      margin: 0px 0px 0px 8px;
+   }
+	@keyframes pop {
+		0% {
+   			transform: scale(0) translateY(-50%);
+    		opacity: 0;
+ 		}
+  		70% {
+    		transform: scale(1.2) translateY(-50%);
+    		opacity: 1;
+  		}
+  		100% {
+    		transform: scale(1) translateY(-50%);
+  		}
+	}
+	@keyframes wobble {
+ 	 	0% { transform: translateX(0) translateY(-50%); }
+ 	 	15% { transform: translateX(-5px) translateY(-50%); }
+  	 	30% { transform: translateX(5px) translateY(-50%); }
+  	 	45% { transform: translateX(-5px) translateY(-50%); }
+  	 	60% { transform: translateX(5px) translateY(-50%); }
+  	 	75% { transform: translateX(-5px) translateY(-50%); }
+  	 	100% { transform: translateX(0) translateY(-50%); }
+		}
+
+	.pop-animation {
+ 	 	animation: pop 0.5s ease forwards;
+	}
+
+	.wobble-animation {
+  		animation: wobble 0.6s ease;
+	}
+	
+	#findIdBtn:disabled {
+  		background-color: #ccc;
+ 	 	cursor: not-allowed;
+	}
+</style>
+</head>
+<body>
+	<div class="p-5" layout:fragment="content">
+		<div style="width: 500px; border: 1px solid #D9D9D9; border-radius: 8px; padding: 48px; margin: 0 auto;">
+			<h3 style="text-align: center; font-weight: bold;">아이디 찾기</h3>
+			<form method="post" th:action="@{/member/find_id}"
+											th:object="${memberForm}">
+			<hr class="my-4"/>	
+			
+				<div class="my-3">
+					<label for="to" th:text="이메일"></label>
+					<div class="d-flex">
+						<input type="Email" name="to" id="to" class="form-control "
+							th:field="*{email}"> <input type="button" class="btn"
+							value="인증번호" id="sendCodeBtn"
+							style="color: white; background-color: #889F69 !important;" />
+					</div>
+				</div>
+
+				<div class="my-3">
+					<label for="userNum" th:text="인증번호"></label>
+					<div style="position: relative;">
+						<input type="text" name="userNum" id="userNum"
+							class="form-control"> 
+							<i class="fa-solid fa-check" id="check"
+							   style="display: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 24px; color: gray;"></i>
+					</div>
+					<div id="timerArea"
+						 style="text-size: 7px; text-align: right; margin-top: 5px; color: gray; display: none;">
+						  인증만료: <span id="timer">03:00</span>
+					</div>
+
+					<div class="text-end my-3">
+						<input type="button" class="btn" value="아이디 찾기" id="findIdBtn"
+							style="color: white; background-color: #889F69 !important; width: 50%;" />
+					</div>
+				</div>
+			</form>
+		
+		</div>
+		
+<script>
+$(function() {
+	var step = 1;
+
+	$("#userNum").on('keyup', function() {
+		const code = $(this).val();
+	    const check = $("#check");
+	    
+	    // 인증 실패시 체크
+	    function handleFailure() {
+	  	  check.show();
+	  	  check.css("color", "red");
+	  	  check.removeClass("pop-animation wobble-animation");
+	  	  void check[0].offsetWidth;
+	  	  check.addClass("wobble-animation");
+	  	}
+	    
+	    if (code.length === 6) {
+	      $.ajax({
+	        url: "/verifyCode",
+	        type: "post",
+	        data: { userNum: code },
+	        success: function(data) {
+	        	check.show();
+	          if (data.includes("인증성공") || data.includes("회원정보 없음")) {
+	        	  check.css("color", "green"); 
+	        	  check.removeClass("pop-animation wobble-animation");
+	              void check[0].offsetWidth; 
+	              check.addClass("pop-animation");
+	          } else {
+	        	  handleFailure();
+	          }
+	        },
+	        error: function(xhr) {
+	        	handleFailure();
+	        }
+	      });
+	    }
+	    if(code.length < 6){
+	    	$("#check").hide();
+	    }else{handleFailure();}
+	  });
+	  
+	  // 인증 시간 타이머
+	  var timerInterval;
+	  var timeLeft = 180;
+
+	  function startTimer() {
+	    clearInterval(timerInterval); // 이전 타이머 제거
+	    timeLeft = 180; // 새로 3분 리셋
+	    $("#timerArea").show(); // 타이머
+	    updateTimer(); // 초기화 표시
+
+	    timerInterval = setInterval(function() {
+	      timeLeft--;
+	      updateTimer();
+
+	      if (timeLeft <= 0) {
+	        clearInterval(timerInterval);
+	        $("#timerArea").hide();
+	        alert("인증 시간이 만료되었습니다.\n다시 인증번호를 요청해주세요.");
+	        $("#userNum").val("");
+	        $("#check").hide();
+	      }
+	    }, 1000);
+	  }
+
+	  function updateTimer() {
+	    var min = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+	    var sec = String(timeLeft % 60).padStart(2, '0');
+	    $("#timer").text(min + ":" + sec);
+	  }
+
+	  // 인증번호 버튼
+	  $("#sendCodeBtn").on("click", function() {
+	    if (step === 1) {
+	      const email = $("#to").val();
+	      if (!email) {
+	        alert("이메일을 입력해주세요.");
+	        return;
+	      }
+
+	      $.ajax({
+	        url: "/sendCode",
+	        type: "post",
+	        data: { to: email },
+	        success: function(data) {
+	          step = 2;
+	          startTimer();
+	          alert(data);
+	        },
+	        error: function() {
+	          alert("서버 오류: 인증번호 전송 실패");
+	        }
+	      });
+	    }
+	    });
+	  
+		   // 아이디 찾기 버튼
+			$("#findIdBtn").on("click", function() {
+			const code = $("#userNum").val();
+			if (!code) {
+				alert("인증번호를 입력해주세요.");
+				return;
+			}
+	      $.ajax({
+	        url: "/verifyCode",
+	        type: "post",
+	        data: { userNum: code },
+	        success: function(data) {
+	        	if(data.includes("인증성공")){
+	          		window.location.href = "/member/find_id_result";
+	        	}else if (data.includes("회원정보 없음")) {
+	        		alert("해당 이메일로 가입된 아이디가 없습니다.\n회원가입 페이지로 이동합니다.");
+	        		window.location.href = "/member/join?email=" + encodeURIComponent($("#to").val());
+	        	}else {
+	        		alert("인증에 실패했습니다.\n인증코드를 확인해주세요.");
+	        	}
+	        },
+	        error: function(xhr) {
+	          alert(xhr.responseText);
+	        }
+	      });
+	  });
+
+
+	// CSRF 설정
+
+	var token = $("meta[name='_csrf']").attr("content");
+	var header = $("meta[name='_csrf_header']").attr("content");
+
+	$(document).ajaxSend(function(e, xhr, options) {
+		xhr.setRequestHeader(header, token);
+		});
+	});
+</script>
+
+		
+	</div>
+
+</body>
+</html>

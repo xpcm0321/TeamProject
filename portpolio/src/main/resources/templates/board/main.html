@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+<head>
+<meta charset="UTF-8">
+<title>MAIN PAGE</title>
+<!-- CKEditor 로드 -->
+<script src="//cdn.ckeditor.com/4.25.1/standard/ckeditor.js"></script> 
+<!-- Latest compiled and minified CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Latest compiled JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+	integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+	crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<style>
+@media all and (max-width: 1920px) {
+	.hotreviewcolumn {
+		display: grid;
+		grid-template-columns: repeat(6, 1fr);
+		gap: 15px;
+		margin: 0 auto;
+		width: 90%; /* margin과 width를 지우면 양끝정렬 */
+		
+	}
+	.reviewcont {
+		display: grid;
+		grid-template-columns: 3; /* 3개의 열로 나눈다 */
+		grid-template-rows: 2;
+	}
+	.reviewcolumnarea {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr); /* 3개의 열로 나눈다 */
+		grid-template-rows: repeat(2, auto);
+		gap: 15px;
+		justify-content: flex-start;
+		align-items: stretch;
+	}
+	.reviewcover {
+		background-color: #ededed;
+		width: 100%;
+		aspect-ratio: 3 / 4; /*이미지 비율*/
+		overflow: hidden;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.coverimage {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: 4px;
+	}
+
+}
+
+@media all and (max-width: 1399px) {
+	.hotreviewcolumn {
+		gap: 15px;
+		grid-template-columns: repeat(6, 1fr);
+		margin: 0 auto;
+		width: 90%; /* margin과 width를 지우면 양끝정렬 */
+		display: grid;
+		justify-content: space-between;
+		white-space: nowrap;
+	}
+	.reviewcolumnarea {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr); /* 3개의 열로 나눈다 */
+		grid-template-rows: repeat(2, auto);
+		gap: 15px;
+		justify-content: flex-start;
+		align-items: stretch;
+	}
+}
+
+@media all and (max-width: 1199px) {
+	#reviewcover {
+		background-color: #ededed;
+		width: 135px;
+		height: 70px; /* 임시 크기 */
+	}
+	.reviewcover {
+		background-color: #ededed;
+		width: 150px;
+		height: 150px; /* 임시 크기 */
+	}
+}
+
+@media all and (max-width: 991px) {
+	#reviewcover {
+		background-color: #ededed;
+		width: 90px !important;
+		height: 70px; /* 임시 크기 */
+	}
+	.reviewcover {
+		background-color: #ededed;
+		width: 90px;
+		height: 100px; /* 임시 크기 */
+	}
+	.hotreviewcolumn {
+		gap: 15px;
+		margin: 0 auto;
+		width: 90%; /* margin과 width를 지우면 양끝정렬 */
+		display: grid;
+		justify-content: space-between;
+		white-space: nowrap;
+	}
+	.reviewcolumnarea {
+		display: grid;
+		grid-template-columns: repeat(1, 1fr); /* 3개의 열로 나눈다 */
+		grid-template-rows: repeat(2, auto);
+		gap: 15px;
+		justify-content: flex-start;
+		align-items: stretch;
+	}
+}
+
+body {
+	font-family: "Noto Sans KR";
+}
+
+.h3 {
+	margin: 0px;
+}
+
+#searchbtn:hover {
+	color: white !important;
+	background-color: #889F69;
+}
+
+p {
+	margin: 0;
+	vertical-align: bottom;
+}
+
+#p {
+	text-overflow: ellipsis;
+	white-space: pre-line;
+}
+
+.p1 {
+	font-size: 16px;
+	margin-right: 5px;
+	color: #212529;
+}
+
+.p2 {
+	font-size: 14px;
+	margin-right: 5px;
+	color: #747474;
+	/* margin-top: 100%; */
+}
+
+.p3 {
+	font-size: 11px;
+	color: #747474;
+	/* margin-top: 100%; */
+}
+
+.p4 {
+	width: 100%;
+	font-size: 11px;
+	margin-top: 3px;
+	color: #212529;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	-webkit-line-clamp: 4;
+}
+
+a {
+	color: #D9D9D9;
+	text-decoration: none;
+	transition: 0.1s;
+}
+
+a:active {
+	color: #212529;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #212529;
+	text-decoration: none;
+	transition: 0.5s;
+}
+
+.coverimage {
+	background-size: cover;
+}
+
+.menu-text {
+	font-size: 16px;
+	color: #212529;
+	margin-top: 40px;
+}
+
+.menu-text2 {
+	font-size: 16px;
+	color: #212529;
+}
+
+.menu-text3 {
+	font-size: 16px;
+	color: #D9D9D9;
+	margin-top: 40px;
+	text-align: right;
+}
+
+.selectmenu {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 20px;
+}
+
+.hotreviewcolumn {
+	margin: 0 auto;
+	width: 90%; /* margin과 width를 지우면 양끝정렬 */
+	display: flex;
+	justify-content: space-between;
+	white-space: nowrap;
+}
+
+.reviewcolumn {
+	display: grid;
+	flex-direction: column;
+	border: 1px solid #D9D9D9;
+	border-radius: 8px;
+	/* margin: 15px 0px 0px 0px; */
+	padding: 20px;
+	/* max-height: 170px;
+		width: 370px; */
+	columns: 3;
+	flex-wrap: wrap;
+	column-gap: 1em;
+}
+
+.reviewcolumnarea {
+	display: grid;
+	gap: 15px;
+	justify-content: flex-start;
+	align-items: stretch;
+}
+
+.review-context {
+	display: flex;
+	width: 100%;
+}
+
+.subselect {
+	margin-left: 15px;
+}
+
+.text-area {
+	display: flex;
+	position: relative;
+	align-items: end;
+}
+
+.one-line {
+	display: flex;
+	align-items: end;
+}
+
+.between {
+	position: relative;
+	justify-content: flex-end;
+}
+
+.fa-regular {
+	font-size: 15px;
+}
+
+.reviewheart {
+	color: #D9D9D9;
+	text-align: end;
+	transition: 0.1s;
+}
+
+.reviewheart:hover {
+	color: rgb(255, 50, 50);
+	transition: 0.5s;
+}
+
+.likecount {
+	color: #212529;
+	font-size: 11px;
+	margin-left: 5px;
+	align-items: center;
+	justify-content: center;
+	line-height: 1.8;
+}
+
+.star-rating {
+	justify-content: left;
+	direction: rtl;
+	display: inline-block;
+	cursor: pointer;
+}
+
+.star-rating input {
+	display: none;
+}
+
+.star-rating label {
+	color: #ddd;
+	font-size: 15px;
+	padding: 0 1px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.star-rating label:hover, .star-rating label:hover ~label, .star-rating input:checked ~label {
+	color: #ffc107;
+}
+</style>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="container my-5">
+			<div class="cont-area" style="border: 1px solid #D9D9D9; border-radius: 8px; margin: 16px 0px 16px 0px; padding: 48px; margin: 0 auto;">
+			<div style="display: flex;">
+				<h3 style="font-weight: bold;">가온누리</h3><p style="margin: 10px 10px;">책 리뷰 플랫폼</p>
+				<div style="display: flex; margin-left: auto; min-width: 100px; max-width: 100%; margin-bottom: 15px;">
+					<input type="text" name="search" id="search" class="form-control me-2" placeholder="Search">
+					<input class="btn" type="button" name="searchbtn" id="searchbtn"
+							style="color: #889F69; border-color: #889F69 !important;
+							padding: 8px 20px;" value="Search">
+				</div>
+			</div>
+				<p class="menu-text2" style="text-align: left; margin-bottom: 30px;">오늘의 인기 - 리뷰 많은 책</p>
+				
+				<div class="hotreviewcolumn">
+				    <div class="reviewcover" th:each="book, iterStat : ${bookList}" th:if="${iterStat.index < 6}">
+				        <img class="coverimage" th:src="${book.image}" th:alt="${book.title}" />
+				    </div>
+				</div>
+
+
+				<div class="selectmenu" style="width: 100%;">
+					<p class="menu-text">전체 리뷰</p>
+					<div class="subselect" style="display: flex;">
+						<p class="menu-text3">
+				            <a th:href="@{/board/main(sort='recent')}" th:classappend="${sort == 'recent'} ? 'fw-bold text-dark' : ''">최신순</a>
+				        </p>
+				        <p class="menu-text3" style="margin-left: 15px;">
+				            <a th:href="@{/board/main(sort='like')}" th:classappend="${sort == 'like'} ? 'fw-bold text-dark' : ''">추천순</a>
+				        </p>
+					</div>
+				</div>
+				<div class="reviewcolumnarea">
+  <div class="reviewcolumn" th:each="r : ${recentReviews}">
+    <a th:href="@{'/review/detail/' + ${r.id}}">
+      <img style="width: 50px; height: auto;" class="coverimage" id="reviewcover" th:src="${r.bookdata?.image}" alt="책 이미지" />
+      <div class="star-rating-readonly">
+        <i class="bi bi-star-fill" th:classappend="${r.rating >= 1} ? 'text-warning' : 'text-secondary'"></i>
+        <i class="bi bi-star-fill" th:classappend="${r.rating >= 2} ? 'text-warning' : 'text-secondary'"></i>
+        <i class="bi bi-star-fill" th:classappend="${r.rating >= 3} ? 'text-warning' : 'text-secondary'"></i>
+        <i class="bi bi-star-fill" th:classappend="${r.rating >= 4} ? 'text-warning' : 'text-secondary'"></i>
+        <i class="bi bi-star-fill" th:classappend="${r.rating >= 5} ? 'text-warning' : 'text-secondary'"></i>
+      </div>
+      <div class="p1" th:text="${r.bookdata?.title}">책 제목</div>
+      <div class="p2" th:text="${r.bookdata?.author}">작가</div>
+      <hr>
+      <div class="p4" th:text="${r.review_title}">제목</div>
+      <div class="p3" th:text="${r.review_content}">리뷰 내용</div>
+      <div class="one-line between">
+        <p class="reviewheart"><i class="fa-regular fa-heart"></i></p>
+        <p class="likecount" th:text="${#lists.size(r.review_like)}">0</p>
+      </div>
+    </a>
+  </div>
+</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script th:inilne="javasrcipt">
+	//서치 함수 말고 search={검색어}로 이동하도록 설정
+$(function(){
+	ajax_api('검색어');
+	//(".book_result").hide();
+	
+$("#searchbtn").on("click", function(){  //검색 버튼 누르면
+	let searchQuery = $("#search").val().trim();  //입력값 공백없이
+	if(searchQuery.length>0){  // 검색어가 공백이 아닌때 호출
+		$(".book_result").fadeIn();
+		ajax_api(searchQuery);
+		}
+	});
+</script>
+</html>

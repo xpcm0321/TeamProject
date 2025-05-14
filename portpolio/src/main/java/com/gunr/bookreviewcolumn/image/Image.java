@@ -11,9 +11,12 @@ import javax.persistence.OneToMany;
 
 import com.gunr.bookreviewcolumn.member.Member;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@NoArgsConstructor // jpa용
 @Entity
 @Getter
 @Setter
@@ -28,4 +31,9 @@ public class Image {
 	// image-member
 	@OneToMany(mappedBy="image")
 	private List<Member> member = new ArrayList<>();
+	
+	
+	public Image(String img) {
+	        this.img = img;
+	}
 }

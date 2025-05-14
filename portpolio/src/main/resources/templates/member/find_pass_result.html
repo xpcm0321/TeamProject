@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko"	xmlns:th="http://www.thymeleaf.org" 
+				xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+				layout:decorate="~{fragments/layout}">	<!-- ##1 -->
+<head>
+<meta charset="UTF-8">
+<title>비밀번호</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+
+</head>
+<body>
+	<div class="p-5" layout:fragment="content">
+	<div style="width: 500px; border: 1px solid #D9D9D9; border-radius: 8px; margin: 16px 0px 16px 0px; padding: 48px; margin: 0 auto;">
+	<h3 style="text-align: center; font-weight: bold; ">비밀번호 설정</h3>
+	<form method="post" th:action="@{/member/find_pass_result}"
+											th:object="${findPasswordForm}">
+
+	<hr class="my-4"/>	
+	
+			<div class="my-3">
+			<label for="password" th:text="새비밀번호"></label>
+			<div style="position: relative;">
+				<input type="password" name="password" id="password"
+					class="form-control" th:field="*{password}"
+					style="padding-right: 40px;"> <i
+					class="fa-solid fa-eye-slash" id="togglePassword"
+					style="position: absolute; top: 10px; right: 10px; cursor: pointer; color: #999;"></i>
+			</div>
+			<p class="text-danger" style="font-size: 12px"
+				th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+		</div>
+		<div class="my-3">
+			<label for="password2" th:text="새비밀번호확인"></label>
+			<div style="position: relative;">
+				<input type="password" name="password2" id="password2"
+					class="form-control" th:field="*{password2}"> <i
+					class="fa-solid fa-eye-slash" id="togglePassword2"
+					style="position: absolute; top: 10px; right: 10px; cursor: pointer; color: #999;"></i>
+			</div>
+			<p class="text-danger" style="font-size: 12px"
+				th:if="${#fields.hasErrors('password2')}" th:errors="*{password2}"></p>
+			</div>
+
+			<div class="text-end my-3">
+				<button type="submit" class="btn"
+					style="color: white; background-color: #889F69; width: 50%;">비밀번호 변경</button>
+			</div>
+			
+		</form>
+		</div>
+<script th:inline="javascript">
+			
+			// 비밀번호 눈 아이콘 (toggle : 클래스를 추가/제거)
+		    const togglePassword = document.querySelector('#togglePassword');
+   			const passwordInput = document.querySelector('#password');
+
+    		togglePassword.addEventListener('click', function () {
+        		const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+       			passwordInput.setAttribute('type', type);
+	
+       			// 아이콘 변경
+        		this.classList.toggle('fa-eye');
+       			this.classList.toggle('fa-eye-slash');
+   			 });
+    		// 비밀번호 눈 아이콘 (toggle : 클래스를 추가/제거)
+		    const togglePassword2 = document.querySelector('#togglePassword2');
+   			const passwordInput2 = document.querySelector('#password2');
+
+    		togglePassword2.addEventListener('click', function () {
+        		const type = passwordInput2.getAttribute('type') === 'password' ? 'text' : 'password';
+       			passwordInput2.setAttribute('type', type);
+	
+       			// 아이콘 변경
+        		this.classList.toggle('fa-eye');
+       			this.classList.toggle('fa-eye-slash');
+   			 });
+			
+		</script>
+	</div>
+
+</body>
+</html>

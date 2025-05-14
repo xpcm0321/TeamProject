@@ -44,7 +44,7 @@ public class Review {
    
    // OneToMany, ManyToMany, ManyToOne
    // review-member
-   @ManyToMany(mappedBy="review_m")  // Member.class에서 private List<Review> review_m = new ArrayList<>();
+   @ManyToMany(mappedBy="review_m")
    private List<Member> member_r = new ArrayList<>();
    
    // review-member

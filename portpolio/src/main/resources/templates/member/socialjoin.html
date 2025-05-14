@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko"	xmlns:th="http://www.thymeleaf.org" 
+				xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+				layout:decorate="~{fragments/layout}">	<!-- ##1 -->
+<head>
+<meta charset="UTF-8">
+<title>회원가입</title>
+<!-- 눈 아이콘 css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+<style>
+	h3{
+		margin-bottom: 30px;
+	}
+	#btn-okay:hover{
+		background-color: rgb(109, 131, 80);
+	}
+	
+	#btn-cancel:hover{
+		color: white !important;
+		background-color: #889F69;
+	}
+	#social-oneclick{
+		width: 50px;
+		height: 50px;
+		border-radius: 50%;
+		margin: 0px 8px 0px 8px;
+	}
+   	.btn{
+      margin: 0px 0px 0px 8px;
+   }
+	   
+	  .login{
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin: 7px 7px;
+   }
+</style>
+</head>
+<body>
+	<div class="p-5" layout:fragment="content">
+		<div style="width: 500px; border: 1px solid #D9D9D9; border-radius: 8px; margin: 16px 0px 16px 0px; padding: 48px; margin: 0 auto;">
+			<h3 style="text-align: center; font-weight: bold; ">회원가입</h3>
+			<form method="post" th:action="@{/member/socialjoin}"
+											th:object="${memberForm}">
+											
+			<input type="hidden" name="provider" th:field="*{provider}" />
+			<input type="hidden" name="oauthId" th:field="*{oauthId}" />
+			<input type="hidden" name="accessToken" th:field="*{accessToken}">
+			
+			<div class="my-3">
+				<label for="username"	th:text="아이디"></label>
+				<input type="text"		name="username"		id="username"	class="form-control"	th:field="*{username}">
+				<p class="text-danger " style="font-size:12px" 
+					 th:if="${#fields.hasErrors('username')}" th:text="${#fields.errors('username')[0]}"></p>
+				<!-- 아이디 중복체크! -->
+				<div id="result" class="result" style="font-size:12px;"></div>
+			</div>
+			
+			
+			<div class="my-3">
+				<label for="nickname"	th:text="닉네임"></label>
+				<input type="text"		name="nickname"		id="nickname"	class="form-control"	th:field="*{nickname}">
+				<p class="text-danger" style="font-size:12px" 
+				 th:if="${#fields.hasErrors('nickname')}" th:text="${#fields.errors('nickname')[0]}"></p>
+			</div>
+			<div class="my-3">
+				<label for="password"	th:text="비밀번호"></label>
+				<div style="position: relative;">
+					<input type="password"	name="password"		id="password"	class="form-control"	th:field="*{password}" style="padding-right: 40px;">
+					 	<i class="fa-solid fa-eye-slash" id="togglePassword" 
+           				   style="position: absolute; top: 10px; right: 10px; cursor: pointer; color: #999;"></i>
+    			</div>
+				<p class="text-danger" style="font-size:12px" 
+				th:if="${#fields.hasErrors('password')}" th:text="${#fields.errors('password')[0]}"></p>
+			</div>
+			<div class="my-3">
+				<label for="password2"	th:text="비밀번호확인"></label>
+				<div style="position: relative;">
+					<input type="password"	name="password2"	id="password2"	class="form-control"	th:field="*{password2}">
+					<i class="fa-solid fa-eye-slash" id="togglePassword2" 
+           				   style="position: absolute; top: 10px; right: 10px; cursor: pointer; color: #999;"></i>
+				</div>
+				<p class="text-danger" style="font-size:12px" 
+				th:if="${#fields.hasErrors('password2')}" th:text="${#fields.errors('password2')[0]}"></p>
+				
+			</div>
+			<div class="my-3">
+					<label for="email" th:text="이메일"></label>
+						<input type="text" name="email" id="email" class="form-control"
+							th:field="*{email}"> 
+			</div>
+			<div class="my-3">
+				<label for="age"		th:text="나이"></label>
+				<input type="text"	name="age"	id="age"	class="form-control"	th:field="*{age}">
+				<p class="text-danger" style="font-size:12px" th:if="${#fields.hasErrors('age')}" th:errors="*{age}"></p>
+			</div>
+			<!-- 회원가입 버튼 -->
+			<div class="my-3">
+				<input type="submit" class="btn" value="회원가입" id="btn-okay" style="width: 100%;  height: 45px; margin-top: 20px; color: white; background-color: #889F69;"/>
+			</div>
+        	 
+			</form>
+			
+		</div>
+	<script th:inline="javascript">
+	[[${emailError} ? 'alert("' + ${emailError} + '");' : '']];
+	$(function(){
+				$(".result").hide();
+				$("#username").on("keyup" , function(){
+					let username = $(this).val().trim();
+					if(username.length>0){
+						$(".result").fadeIn();
+						iddoublecheck(username);
+					}
+				});
+				function iddoublecheck(username){
+					$.ajax({
+						url:"/idByUsername/" +username,
+						type:"GET",
+						dataType:"json",
+						contentType:"application/json;harset=UTF-8",
+						error:function(xhr, status, msg){console.error(status + "/" + msg);},
+						success:function(json){
+							if(username.length>=4){
+							if (json.result === "사용불가능합니다.") {
+			                    $("#result")
+			                        .text("이미 사용 중인 아이디입니다.")
+			                        .css("color", "red")
+			                        .show();
+			                } else {
+			                    $("#result")
+			                        .text("사용 가능한 아이디입니다.")
+			                        .css("color", "#889F69")
+			                        .show();
+			                }
+							}
+						}
+					});	
+				}
+			});
+			
+			// 비밀번호 눈 아이콘 (toggle : 클래스를 추가/제거)
+		    const togglePassword = document.querySelector('#togglePassword');
+   			const passwordInput = document.querySelector('#password');
+
+    		togglePassword.addEventListener('click', function () {
+        		const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+       			passwordInput.setAttribute('type', type);
+	
+       			// 아이콘 변경
+        		this.classList.toggle('fa-eye');
+       			this.classList.toggle('fa-eye-slash');
+   			 });
+    		// 비밀번호 눈 아이콘 (toggle : 클래스를 추가/제거)
+		    const togglePassword2 = document.querySelector('#togglePassword2');
+   			const passwordInput2 = document.querySelector('#password2');
+
+    		togglePassword2.addEventListener('click', function () {
+        		const type = passwordInput2.getAttribute('type') === 'password' ? 'text' : 'password';
+       			passwordInput2.setAttribute('type', type);
+	
+       			// 아이콘 변경
+        		this.classList.toggle('fa-eye');
+       			this.classList.toggle('fa-eye-slash');
+   			 });
+    		
+</script>
+</div>
+
+</body>
+</html>

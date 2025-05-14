@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" 
+  	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+  	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">	
+<head>
+<meta charset="UTF-8">
+<title>가온누리</title>
+</head>
+<body>
+	<!-- header.html -->
+	<th:block th:fragment="header">
+		<nav class="navbar navbar-expand-sm navbar-dark" style="height:60px; background-color: #889F69 !important;">
+			<div class="container-fluid px-5">
+				<a class="navbar-brand" href="javascript:void(0)" th:href="@{/board/main}"><strong>GaonNuri</strong></a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				
+				<div class="collapse navbar-collapse" id="mynavbar">
+					<ul class="navbar-nav me-auto">
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/review/reviewlist}" sec:authorize="isAuthenticated()">REVIEW</a>
+						</li>
+					</ul>
+					<!--    권한
+                  sec:authorize="isAuthenticated()"   로그인해야 사용가능
+                  sec:authorize="isAnonymous()"      권한없어도 사용가능
+               -->
+					<ul class="d-flex navbar-nav">
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/member/login}" sec:authorize="isAnonymous()">LOGIN</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/member/join}" sec:authorize="isAnonymous()">JOIN</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/member/logout}" sec:authorize="isAuthenticated()">LOGOUT</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" th:href="@{/admin/adminpage}" sec:authorize="hasRole('ADMIN')">ADMINPAGE</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" 
+							th:href="@{/member/mypage}" sec:authorize="hasRole('MEMBER')">MYPAGE</a>
+						</li>
+
+						<!-- <li class="nav-item">
+                     <a class="nav-link" th:href="@{/member/mypage/{id}(id=${loginUser.id})}" sec:authorize="isAuthenticated()">MYPAGE</a>
+                  </li> -->
+					</ul>
+				</div>
+			</div>
+		</nav>
+	</th:block>
+</body>
+</html>

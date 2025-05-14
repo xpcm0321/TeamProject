@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+<head>
+<meta charset="UTF-8">
+<title>REVIEW DETAIL PAGE</title>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+	
+<style>
+.btn-check+.btn {
+	color: gray;
+	border: none;
+	background: none;
+}
+/*
+.btn-check:checked+.btn {
+	border-bottom: 1px solid black;
+}
+*/
+.nick{
+	text-decoration: none; 
+	color: black;
+}
+.nick:hover{
+	text-decoration: underline;
+}
+</style>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="container-fluid text-center py-5"
+			style="background-color: #889F69;">
+			<h2 class="fw-bold text-white">MYPAGE</h2>
+			
+			<input type="hidden" th:value="${dto.id}" id="memberId" />
+			
+			<div class="position-relative d-inline-block m-3" style="width: 100px; height: 100px;">
+			<img th:src="${dto.memberimg}" class="rounded-circle" width="100" height="100" />
+			 <a href="/member/selectProfile"
+			     class="position-absolute bottom-0 end-0 bg-white border rounded-circle d-flex justify-content-center align-items-center"
+			     style="width: 25px; height: 25px; transform: translate(10%, 10%); color: black; text-decoration: none;"
+			     title="프로필 변경">
+			    <i class="fa-solid fa-pen" style="color:#889F69; font-size: 12px;"></i>
+			  </a>
+			</div>
+			<div>
+				<a th:text="${dto.nickname} + ' 님 >'" th:href="@{/member/memberInfo}" class="nick"></a>
+				<br/><small th:text="${dto.username}">아이디</small>
+			</div>
+		</div>
+
+		<!-- Reading Preference Section -->
+		<div class="container my-5">
+			<div class="d-flex justify-content-center px-3 mb-2">
+  			<div class="section-box text-center w-100" style="max-width: 1000px; border: 1px solid #D9D9D9; border-radius: 8px; padding: 30px;">
+				<h6>
+					<span th:text="${dto.nickname}">닉네임</span> 님의 독서 취향
+				</h6>
+				<button class="btn btn-outline-secondary mt-2">+</button>
+			</div>
+			</div>
+		<div class="d-flex justify-content-center px-3">
+  <div class="section-box text-center w-100" style="max-width: 1000px; border: 1px solid #D9D9D9; border-radius: 8px; padding: 30px;">
+
+		<!-- Review Tabs Section -->
+			<div class="section-box">
+			
+				<div class="d-flex justify-content-center gap-4 mb-4">
+					<input type="radio" class="btn-check" name="viewOption" id="myReviews" autocomplete="off" checked   >
+					<label class="btn fw-bold text-gray" for="myReviews">내가 쓴 리뷰</label> 
+					<input type="radio" class="btn-check" name="viewOption" id="likedPosts" autocomplete="off">
+					<label class="btn fw-bold text-gray" for="likedPosts">좋아요 한 글</label>
+					<!-- <input type="radio" class="btn-check" name="viewOption" id="wishlist" autocomplete="off">
+					<label class="btn fw-bold text-gray" for="wishlist">찜 리스트</label> -->
+				</div>
+				<hr style="border-top: 1px solid #000;"/>
+				<div id="myReviewsList">
+				</div>
+			</div>
+				<div id="likedPostsList" style="display: none;">
+				</div>
+
+				<div id="wishlistList" style="display: none;">
+				</div>
+			</div>
+			</div>
+			
+			<!-- 페이지네이션 -->
+		</div>
+		<script>
+		  document.addEventListener('DOMContentLoaded', () => {
+			//const memberId = document.body.getAttribute("data-member-id")  ;
+			//const memberId = document.body.dataset.memberId; // Thymeleaf에서 사용자 id를 삽입하거나 임시 값 사용
+  			//console.log(memberId);
+			
+		    const radios = document.querySelectorAll('input[name="viewOption"]');
+		    radios.forEach(radio => {
+		      radio.addEventListener('change', () => {
+		        // 모든 리스트 감추기
+		        document.getElementById("myReviewsList").style.display = "none";
+		        document.getElementById("likedPostsList").style.display = "none";
+		        document.getElementById("wishlistList").style.display = "none";
+		
+		        // 선택된 항목만 표시
+		        if (radio.id === 'myReviews') {
+		          document.getElementById("myReviewsList").style.display = "block";
+		        } else if (radio.id === 'likedPosts') {
+		          document.getElementById("likedPostsList").style.display = "block";  
+		        } else if (radio.id === 'wishlist') {
+		          document.getElementById("wishlistList").style.display = "block";
+		          
+		        }
+		      });
+		    });
+		  });
+
+		  function loadList(type) {
+			console.log(type);
+			const  memberId =  document.getElementById("memberId");
+ 			console.log(memberId.value);
+			
+		    let url = '';
+		    if (type === 'myReviews') url = '/member/reviews/'+memberId.value;
+		    else if (type === 'likedPosts') url = `/member/likes/${memberId.value}`;  //##
+		    else if (type === 'wishlist') url = `/member/wishlist/memberId`; //##
+
+		    fetch(url)
+		      .then(res => res.json())
+		      .then(data => {
+		        const container = document.getElementById(type + 'List');
+		        
+		        container.innerHTML = '';
+		        data.forEach(item => {
+		          const formattedDate = new Date(item.review_date)
+		          .toLocaleDateString('ko-KR', {year: 'numeric', month: '2-digit', day: '2-digit'})
+		          .replace(/\.$/, '');
+		          const div = document.createElement('div');
+		          div.className = 'rounded p-3 mb-2';
+		          div.style.backgroundColor = '#ededed';
+		       	  // 별점 생성
+		          let stars = '';
+		          for (let i = 1; i <= 5; i++) {
+		            stars += `<i class="bi bi-star-fill ${i <= item.rating ? 'text-warning' : 'text-secondary'}"></i>`;
+		          }
+		          
+		          // 내용 생성
+		          div.innerHTML = `
+					  <div class="d-flex justify-content-between align-items-center">
+					    <div class="d-flex align-items-center text-start">
+					      <span class="me-5">${stars}</span>
+					      <strong>${item.review_title}</strong>
+					    </div>
+					    <small class="text-muted">${formattedDate}</small>
+					  </div>
+					`;
+
+
+		          //div.textContent = type === 'wishlist' ? item.title : item.content || item.title;
+		          //console.log( div.textContent);
+		          
+		          // 클릭 시 상세 페이지로 이동
+		          div.style.cursor = 'pointer';
+  				  div.addEventListener('click', () => {
+    			  window.location.href = `/review/detail/${item.id}`;
+  				  });
+		          
+		          container.appendChild(div);
+		        });
+		      });
+		  }
+
+		  document.addEventListener('DOMContentLoaded', () => {
+		    const radios = document.querySelectorAll('input[name="viewOption"]');
+		    radios.forEach(radio => {
+		      radio.addEventListener('change', () => {
+		        // 모든 리스트 숨김
+		        document.getElementById("myReviewsList").style.display = "none";
+		        document.getElementById("likedPostsList").style.display = "none";
+		        document.getElementById("wishlistList").style.display = "none";
+
+		        // 현재 선택된 항목만 보이기
+		        const selectedId = radio.id;
+		        document.getElementById(selectedId + "List").style.display = "block";
+		        loadList(selectedId);
+		      });
+		    });
+
+		    // 초기 로딩
+		    loadList('myReviews');
+		  });
+</script>
+	</div> 
+</body>
+</html>

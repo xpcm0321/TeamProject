@@ -19,19 +19,25 @@ import com.gunr.bookreviewcolumn.bookdata.Bookdata;
 import com.gunr.bookreviewcolumn.image.Image;
 import com.gunr.bookreviewcolumn.review.Review;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor // jpa용
+@AllArgsConstructor // 테스트 유틸용
+@Builder // 객체 생성 쉽게
 public class Member {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id; // 번호
 
 	@Column(unique = true)
-	private String username; // 유저이름
+	private String username; // 아이디
 
 	@Column(nullable = false)
 	private String nickname; // 닉네임
@@ -41,7 +47,16 @@ public class Member {
 
 	@Column(nullable = false)
 	private int age; // 나이
+	
+	@Column
+	private String provider;  // kakao , naver ##
+	
+	@Column
+	private String oauthId;  // 소셜 로그인에서 받은 고유 사용자 id ##
 
+	@Column
+	private String accessToken;
+	
 	// 추가
 	@Column(nullable = false)
 	private String memberimg=""; // 프로필 사진 선택
@@ -86,4 +101,7 @@ public class Member {
 	// member-image
 	@ManyToOne
 	private Image image;
+	
+	@Column(nullable = false)
+	private boolean enabled = true; // 회원탈퇴시 비활성화
 }
