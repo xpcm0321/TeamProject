@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ko"	xmlns:th="http://www.thymeleaf.org" 
+				xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+				layout:decorate="~{fragments/layout}">	<!-- ##1 -->
+<head>
+<meta charset="UTF-8">
+<title>회원가입</title>
+<!-- CSRF 토큰 -->
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- 눈 아이콘 css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+
+<style>
+	h3{
+		margin-bottom: 30px;
+	}
+	#btn-okay:hover{
+		background-color: rgb(109, 131, 80);
+	}
+	
+	#btn-cancel:hover{
+		color: white !important;
+		background-color: #889F69;
+	}
+	#social-oneclick{
+		width: 50px;
+		height: 50px;
+		border-radius: 50%;
+		margin: 0px 8px 0px 8px;
+	}
+   	.btn2{
+      margin: 0px 0px 0px 8px;
+      
+   }
+	.login{
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin: 7px 7px;
+   }
+	@keyframes pop {
+		0% {
+   			transform: scale(0) translateY(-50%);
+    		opacity: 0;
+ 		}
+  		70% {
+    		transform: scale(1.2) translateY(-50%);
+    		opacity: 1;
+  		}
+  		100% {
+    		transform: scale(1) translateY(-50%);
+  		}
+	}
+	@keyframes wobble {
+ 	 	0% { transform: translateX(0) translateY(-50%); }
+ 	 	15% { transform: translateX(-5px) translateY(-50%); }
+  	 	30% { transform: translateX(5px) translateY(-50%); }
+  	 	45% { transform: translateX(-5px) translateY(-50%); }
+  	 	60% { transform: translateX(5px) translateY(-50%); }
+  	 	75% { transform: translateX(-5px) translateY(-50%); }
+  	 	100% { transform: translateX(0) translateY(-50%); }
+		}
+
+	.pop-animation {
+ 	 	animation: pop 0.5s ease forwards;
+	}
+
+	.wobble-animation {
+  		animation: wobble 0.6s ease;
+	}
+	
+	#findIdBtn:disabled {
+  		background-color: #ccc;
+ 	 	cursor: not-allowed;
+	}
+	
+	@keyframes beatFade {
+	  0%, 100% {
+	    transform: scale(1);
+	    opacity: 1;
+	  }
+	  50% {
+	    transform: scale(1.3);
+	    opacity: 0.4;
+	  }
+	}
+	
+	.beat:hover {
+	  display: inline-block;
+	  transition: transform 0.2s;
+	}
+	
+	.beat:hover {
+	  animation: beatFade 1s infinite ease-in-out;
+	}
+
+		
+</style>
+</head>
+<body>
+	<div class="p-5" layout:fragment="content">
+		<div style="width: 500px; border: 1px solid #D9D9D9; border-radius: 8px; margin: 16px 0px 16px 0px; padding: 48px; margin: 0 auto;">
+			<h3 style="text-align: center; font-weight: bold; ">회원가입</h3>
+			<form method="post" th:action="@{/member/join}" th:object="${memberForm}">
+			
+			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        	 
+			<div class="my-3">
+				<label for="nickname"	th:text="닉네임"></label>
+				<div style="position: relative;">
+					<input type="text"		name="nickname"		id="nickname"	class="form-control"	th:field="*{nickname}">
+					 <i class="fa-solid fa-wand-magic-sparkles beat" onclick="generateNickname()" title="닉네임 자동 생성"
+					 	style="position: absolute; top: 10px; right: 10px; cursor: pointer; color: #889F69;"></i>
+				</div>
+				<p class="text-danger" style="font-size:12px" th:if="${#fields.hasErrors('nickname')}" th:text="${#fields.errors('nickname').contains('정보') ? '닉네임은 필수 정보입니다.' : #fields.errors('nickname')[0]}"></p>
+				
+			</div>
+			
+			<div class="my-3">
+				<label for="username"	th:text="아이디"></label>
+				<input type="text"		name="username"		id="username"	class="form-control"	th:field="*{username}">
+				<p class="text-danger" style="font-size:12px" th:if="${#fields.hasErrors('username')}" th:text="${#fields.errors('username').contains('정보') ? '아이디는 필수 정보입니다.' : #fields.errors('username')[0]}"></p>
+				<!-- 아이디 중복체크! -->
+				<div id="result" class="result" style="font-size:12px;"></div>
+			</div>
+			
+			<div class="my-3">
+				<label for="password"	th:text="비밀번호"></label>
+				<div style="position: relative;">
+					<input type="password"	name="password"		id="password"	class="form-control"	th:field="*{password}" style="padding-right: 40px;">
+					 	<i class="fa-solid fa-eye-slash" id="togglePassword" 
+           				   style="position: absolute; top: 10px; right: 10px; cursor: pointer; color: #999;"></i>
+    			</div>
+				<p class="text-danger" style="font-size:12px" th:if="${#fields.hasErrors('password')}" th:text="${#fields.errors('password').contains('정보') ? '비밀번호는 필수 정보입니다.' : #fields.errors('password')[0]}"></p>
+			</div>
+			<div class="my-3">
+				<label for="password2"	th:text="비밀번호확인"></label>
+				<div style="position: relative;">
+					<input type="password"	name="password2"	id="password2"	class="form-control"	th:field="*{password2}">
+					<i class="fa-solid fa-eye-slash" id="togglePassword2" 
+           				   style="position: absolute; top: 10px; right: 10px; cursor: pointer; color: #999;"></i>
+				</div>
+				<p class="text-danger" style="font-size:12px" th:if="${#fields.hasErrors('password2')}" th:errors="*{password2}"></p>
+			</div>
+			<div class="my-3">
+					<label for="to" th:text="이메일"></label>
+					<div class="d-flex">
+						<input type="Email" name="email" id="email" class="form-control " th:field="*{email}">
+						<input type="button" class="btn btn2" value="인증번호" id="sendCodeBtn" style="color: #889F69; border-color: #889F69; !important;" />
+					</div>
+					<p class="text-danger" style="font-size:12px" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+				</div>
+			<div class="my-3">
+					<label for="joinCode" th:text="인증번호"></label>
+					<div style="position: relative;">
+						<input type="text" name="joinCode" id="joinCode"
+							class="form-control"> 
+							<i class="fa-solid fa-check" id="check"
+							   style="display: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 24px; color: gray;"></i>
+					</div>
+					<div id="timerArea"
+						 style="text-size: 7px; text-align: right; margin-top: 5px; color: gray; display: none;">
+						  인증만료: <span id="timer">03:00</span>
+					</div>
+			</div>
+			<!-- 회원가입 버튼 -->
+			<div class="my-3">
+				<input type="submit" class="btn" value="회원가입" id="btn-okay" style="width: 100%;  height: 45px; margin-top: 20px; color: white; background-color: #889F69;"/>
+			</div>
+				<hr class="my-4"/>
+			<!-- api로그인 버튼 start -->
+			<p style="text-align:center">SNS 계정으로 간편가입</p>
+        	 <!-- api로그인 버튼 start -->
+			<div class="social-login"  style="display: flex; justify-content: center;">
+				<div class="kakao-login m-2" id="social-onclick" style="width: 50px; height: 50px; background-color: #FFE513; border-radius: 50%;">
+               <div>
+                  <a href="/oauth2/authorization/kakao">
+                     <img src="../images/kakao.png" alt="카카오로고" style="width:50px; height:50px; border-radius: 50%;" />
+                  </a>
+               </div>
+            </div>
+			<div class="naver-login m-2" id="social-onclick" style="width: 50px; height: 50px; background-color: #00BB00; border-radius: 50%;">
+					<div>
+					<a href="/oauth2/authorization/naver">
+						<img src="../images/naverLogo.png" alt="네이버로고" style="width:50px; height:50px;" />
+					</a>
+					</div>
+			</div>
+			<div class="google-login m-2" id="social-onclick" style="width: 50px; height: 50px; background-color: #E83B2F; border-radius: 50%;">
+				<div>
+				<a href="/oauth2/authorization/google">
+					<img src="../images/googleLogo.png" alt="구글로고" style="width:50px; height:50px;" />
+				</a>
+				</div>
+				
+			</div>
+			</div>
+        	 <!-- api로그인 버튼 end -->
+			</form>
+			
+		</div>
+<script th:inline="javascript">
+[[${emailError} ? 'alert("' + ${emailError} + '");' : '']];
+
+// 닉네임 자동생성(ai)
+function generateNickname(){
+	fetch('/nickname/generate')
+		.then(res => res.text())
+		.then(nickname => {
+			document.getElementById('nickname').value = nickname;
+		})
+		.catch(err => {
+			console.error(err);
+			alert("닉네임 생성 실패");
+		})
+}
+
+
+$(function(){
+		$(".result").hide();
+		$("#username").on("keyup" , function(){
+			let username = $(this).val().trim();
+			if(username.length>0){
+				$(".result").fadeIn();
+				iddoublecheck(username);
+			}
+		});
+		function iddoublecheck(username){
+			$.ajax({
+				url:"/idByUsername/" +username,
+				type:"GET",
+				dataType:"json",
+				contentType:"application/json;harset=UTF-8",
+				error:function(xhr, status, msg){console.error(status + "/" + msg);},
+				success:function(json){
+					if(username.length>=4){
+					if (json.result === "사용불가능합니다.") {
+	                    $("#result")
+	                        .text("이미 사용 중인 아이디입니다.")
+	                        .css("color", "red")
+	                        .show();
+	                } else {
+	                    $("#result")
+	                        .text("사용 가능한 아이디입니다.")
+	                        .css("color", "#889F69")
+	                        .show();
+	                }
+					}
+				}
+			});	
+		}
+	});
+			
+	// 비밀번호 눈 아이콘 (toggle : 클래스를 추가/제거)
+    const togglePassword = document.querySelector('#togglePassword');
+ 			const passwordInput = document.querySelector('#password');
+
+  		togglePassword.addEventListener('click', function () {
+      		const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+     			passwordInput.setAttribute('type', type);
+
+     			// 아이콘 변경
+      		this.classList.toggle('fa-eye');
+     			this.classList.toggle('fa-eye-slash');
+ 			 });
+  		// 비밀번호 눈 아이콘 (toggle : 클래스를 추가/제거)
+    const togglePassword2 = document.querySelector('#togglePassword2');
+ 			const passwordInput2 = document.querySelector('#password2');
+
+  		togglePassword2.addEventListener('click', function () {
+      		const type = passwordInput2.getAttribute('type') === 'password' ? 'text' : 'password';
+     			passwordInput2.setAttribute('type', type);
+
+     			// 아이콘 변경
+      		this.classList.toggle('fa-eye');
+     			this.classList.toggle('fa-eye-slash');
+ 			 });
+    
+	$(function() {
+	var step = 1;
+
+	$("#joinCode").on('keyup', function() {
+	const code = $(this).val();
+ 	const check = $("#check");
+    			    
+	// 인증 실패시 체크
+	function handleFailure() {
+	check.show();
+	check.css("color", "red");
+	check.removeClass("pop-animation wobble-animation");
+	void check[0].offsetWidth;
+	check.addClass("wobble-animation");
+	}
+	if (code.length === 6) {
+	$.ajax({
+		url: "/verifyJoinCode",
+		type: "post",
+		data: { joinCode: code },
+		success: function(data) {
+		check.show();
+		if (data.includes("인증성공") || data.includes("회원정보 없음")) {
+			check.css("color", "green"); 
+ 			check.removeClass("pop-animation wobble-animation");
+			void check[0].offsetWidth; 
+		check.addClass("pop-animation");
+		} else {
+		handleFailure();
+		}
+ 		},
+		error: function(xhr) {
+		handleFailure();
+		}
+		});
+	}
+		if(code.length < 6){
+		$("#check").hide();
+		}else{handleFailure();}
+		});
+    			  
+		// 인증 시간 타이머
+		var timerInterval;
+		var timeLeft = 180;
+
+		function startTimer() {
+			clearInterval(timerInterval); // 이전 타이머 제거
+			timeLeft = 180; // 새로 3분 리셋
+			$("#timerArea").show(); // 타이머
+    			    updateTimer(); // 초기화 표시
+
+    			    timerInterval = setInterval(function() {
+    			      timeLeft--;
+    			      updateTimer();
+
+    			      if (timeLeft <= 0) {
+    			        clearInterval(timerInterval);
+    			        $("#joinCode").hide();
+    			        alert("인증 시간이 만료되었습니다.\n다시 인증번호를 요청해주세요.");
+    			        $("#userNum").val("");
+    			        $("#check").hide();
+    			      }
+    			    }, 1000);
+    			  }
+
+    			  function updateTimer() {
+    			    var min = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+    			    var sec = String(timeLeft % 60).padStart(2, '0');
+    			    $("#timer").text(min + ":" + sec);
+    			  }
+
+	// 인증번호 버튼
+	$("#sendCodeBtn").on("click", function() {
+		if (step === 1) {
+		const email = $("#email").val();
+		if (!email) {
+			alert("이메일을 입력해주세요.");
+			$("#email").focus();
+	  		return;
+		}
+
+		$.ajax({
+			url: "/sendJoinCode",
+			type: "post",
+			data: { email: email },
+			success: function(data) {
+			step = 2;
+			startTimer();
+ 			alert(data);
+		},
+		error: function() {
+		alert("서버 오류: 인증번호 전송 실패");
+		}
+		});
+		}
+		});
+	
+	
+	// CSRF 설정
+	var token = $("meta[name='_csrf']").attr("content");
+  	var header = $("meta[name='_csrf_header']").attr("content");
+
+	$(document).ajaxSend(function(e, xhr, options) {
+		xhr.setRequestHeader(header, token);
+		});
+	});	  
+</script>
+</div>
+</body>
+</html>

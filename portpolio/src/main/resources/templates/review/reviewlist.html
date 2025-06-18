@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+<head>
+<meta charset="UTF-8">
+<title>가온누리</title>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<!-- Latest compiled JavaScript -->
+<!-- 외부 스타일 -->
+<style>
+.star-rating {
+	direction: rtl;
+	display: inline-block;
+	cursor: pointer;
+}
+
+.star-rating input {
+	display: none;
+}
+
+.star-rating label {
+	color: #ddd;
+	font-size: 18px;
+	padding: 0 1px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.star-rating label:hover, .star-rating label:hover ~label, .star-rating input:checked
+	 ~label {
+	color: #ffc107;
+}
+
+.pagination .page-link {
+	color: #889F69;
+	border-color: #889F69;
+}
+
+.pagination .page-link:hover {
+	background-color: #889F69;
+	color: white;
+	border-color: #889F69;
+}
+
+.pagination .active .page-link {
+	background-color: #889F69;
+	border-color: #889F69;
+	color: white;
+}
+.title {
+	color: black;
+	text-decoration: none;
+	letter-spacing: 1px; /* 글자 간 간격 넓히기 */
+}
+.title:hover{
+	text-decoration: underline;
+}
+table th, table td {
+	letter-spacing: 1px; /* 테이블 제목과 내용 모두 글자 간격 넓히기 */
+}
+/* 책 제목만 왼쪽 정렬, 나머지는 가운데 정렬 */
+.book-title {
+	text-align: left;
+}
+
+.center-align {
+	text-align: center;
+}
+.title {
+	color: black;
+	text-decoration: none;
+	transition: color 0.2s ease;
+}
+.title:hover {
+	color: #687a50;
+	text-decoration: underline;
+}
+.pagination .page-link {
+	margin: 0 3px;
+	transition: background-color 0.2s, color 0.2s;
+}
+.btn2:hover {
+	background-color: #6f8f48 !important;
+	transform: scale(1.03);
+	transition: all 0.2s ease;
+}
+</style>
+<!-- 외부 스타일 END -->
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="container my-5" style="width: 1200px;">
+		<div class="d-flex justify-content-between align-items-center" >
+			<h3 style="font-weight: bold; margin-top:50px;">리뷰</h3>
+			<div class="d-flex justify-content-end">
+				<form th:action="@{/review/reviewlist}" method="get" class="d-flex align-items-center">
+					<input class="form-control me-2" type="text" name="keyword"
+						th:value="${keyword}" placeholder="Search">
+					<button class="btn" type="submit"
+						style="color: white; background-color: #889F69; padding: 6px 12px;">Search</button>
+				</form>
+			</div>
+		</div>
+		
+		<hr style="border-top: 1px solid #000;" />
+		
+			<table class="table table-hover align-middle my-5">
+				<thead>
+					<tr style="margin: 0 auto; text-align: center;">
+						<th scope="col" style="width: 5%;">NO</th>
+						<th scope="col" style="width: 10%; text-align: left;">책표지</th>
+						<th scope="col" style="text-align: left;">리뷰제목</th>
+						<th scope="col" style="width: 15%;">별점</th>
+						<th scope="col" style="width: 10%;">좋아요</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- 1. th:each="한개, 상태 : 리스트" -->
+					<!-- 2. th:text="동적으로꺼내온데이터" -->
+					<!-- 3. th:href="@{/board/insert}" -->
+					<tr th:each="dto, state : ${list}">
+						<td class="text-center">
+							<a th:text="${list.getTotalElements - ( list.number*list.size )- state.index}"></a>
+						</td>
+						<td class="text-start">
+							<img th:src="${dto.bookdata?.image}" alt="Image to Bookcover" style="width: 50px; height: auto;" />
+						</td>
+						<td class="book-title">
+							<a th:href="@{|/review/detail/${dto.id}|}" th:text="${dto.review_title}" class="title"></a>
+						</td>
+						
+						<td class="text-center">
+							<div class="star-rating animated-stars">
+								<div class="star-rating-readonly">
+									<i class="bi bi-star-fill"
+										th:classappend="${dto.rating >= 5} ? 'text-warning' : 'text-secondary'"></i>
+									<i class="bi bi-star-fill"
+										th:classappend="${dto.rating >= 4} ? 'text-warning' : 'text-secondary'"></i>
+									<i class="bi bi-star-fill"
+										th:classappend="${dto.rating >= 3} ? 'text-warning' : 'text-secondary'"></i>
+									<i class="bi bi-star-fill"
+										th:classappend="${dto.rating >= 2} ? 'text-warning' : 'text-secondary'"></i>
+									<i class="bi bi-star-fill"
+										th:classappend="${dto.rating >= 1} ? 'text-warning' : 'text-secondary'"></i>
+								</div>
+							</div> <!-- <td th:text="${dto.review_content}"></td> -->
+						</td>
+						<td class="text-center">
+							<p th:text="${#lists.size(dto.review_like)}"> </p>
+						</td>
+					</tr>
+				</tbody>
+				<tfoot>
+				  <tr>
+				    <td colspan="5">
+				      <ul class="pagination justify-content-center">
+				        <!-- 이전 버튼 -->
+				        <li class="page-item" th:if="${paging.start >= paging.bottomlist}">
+				          <a class="page-link" style="color: #889F69; font-weight: bold;"
+				             th:href="@{/review/reviewlist(
+				                        page=${paging.start - 2},
+				                        keyword=${keyword},
+				                        tag=${tag}
+				                     )}">이전</a>
+				        </li>
+				
+				        <!-- 페이지 번호 반복 -->
+				        <li th:each="i : ${#numbers.sequence(paging.start, paging.end, 1)}"
+				            th:classappend="${paging.current == i} ? 'active'">
+				          <a class="page-link"
+				             th:href="@{/review/reviewlist(
+				                        page=${i - 1},
+				                        keyword=${keyword},
+				                        tag=${tag}
+				                     )}"
+				             th:text="${i}">1</a>
+				        </li>
+				
+				        <!-- 다음 버튼 -->
+				        <li class="page-item" th:if="${paging.pagetotal > paging.end}">
+				          <a class="page-link"
+				          style="color: #889F69; font-weight: bold;"
+				             th:href="@{/review/reviewlist(
+				                        page=${paging.end},
+				                        keyword=${keyword},
+				                        tag=${tag}
+				                     )}">다음</a>
+				        </li>
+				      </ul>
+				    </td>
+				  </tr>
+				</tfoot>
+			</table>
+			<p class="text-end">
+				<a th:href="@{/review/insert}" class="btn btn2"
+					style="color: white; background-color: #889F69 !important; padding: 8px 20px;">글쓰기</a>
+			</p>
+		</div>
+	</div>
+</body>
+<!-- 외부스크립트 -->
+<script>
+	document.querySelectorAll('.star-rating:not(.readonly) label').forEach(star => {
+			star.addEventListener('click', function() {
+					this.style.transform = 'scale(1.2)';
+					setTimeout(() => {
+							this.style.transform = 'scale(1)';
+					}, 200);
+			});
+	});
+</script>
+<!-- 외부스크립트 END -->
+</html>

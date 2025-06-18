@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+<head>
+<meta charset="UTF-8">
+<title>REVIEW DETAIL PAGE</title>
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<style>
+#btn-cancel:hover{
+      color: white !important;
+      background-color: #889F69;
+   }
+</style>
+</head>
+<body>
+	<div layout:fragment="content" class="container my-5">
+		<h3 th:text="${dto.review_title}" style="margin-top: 40px;">리뷰 제목</h3>
+		
+		<div class="d-flex justify-content-between align-items-center mt-1">
+		<div class="d-flex align-items-center mt-5">
+		    <img th:src="${dto.member?.memberimg}" 
+		         style="width: 60px; height: 60px; border-radius: 50%; background-color: #889F69; object-fit: cover;" />
+    
+		    <div class="d-flex flex-column justify-content-center ms-3" style="line-height: 1.2;">
+		        <h6 class="mb-1" th:text="${dto.member?.nickname}">닉네임</h6>
+		        <small class="text-muted" th:text="${#temporals.format(dto.review_date, 'yyyy년 MM월 dd일 HH:mm')}">작성날짜</small>
+		    </div>
+		</div>
+		<div class="mt-5 text-end">
+			<th:block th:if="${dto.member.username == loginId}">
+				<form th:action="@{/review/delete/{id}(id=${dto.id})}" method="post"
+					style="display: inline;">
+					<input type="hidden" name="id" id="id" th:value="${dto.id}" />
+					<button type="submit" class="btn"
+						style="padding: 8px 20px; color: white; background-color: #889F69;">
+						삭제</button>
+				</form>
+				<a class="btn" th:href="@{|/review/update/${dto.id}|}"
+					style="padding: 8px 20px; color: white; background-color: #889F69;">수정</a>
+			</th:block>
+			<a class="btn" id="btn-cancel" th:href="@{/review/reviewlist}"
+				style="padding: 8px 20px; color: #889F69; border-color: #889F69;">목록보기</a>
+		</div>
+		</div>
+		<hr>
+		<div class="star-rating animated-stars mt-4">
+			<div class="star-rating-readonly">
+				<i class="bi bi-star-fill"
+					th:classappend="${dto.rating >= 1} ? 'text-warning' : 'text-secondary'"></i>
+				<i class="bi bi-star-fill"
+					th:classappend="${dto.rating >= 2} ? 'text-warning' : 'text-secondary'"></i>
+				<i class="bi bi-star-fill"
+					th:classappend="${dto.rating >= 3} ? 'text-warning' : 'text-secondary'"></i>
+				<i class="bi bi-star-fill"
+					th:classappend="${dto.rating >= 4} ? 'text-warning' : 'text-secondary'"></i>
+				<i class="bi bi-star-fill"
+					th:classappend="${dto.rating >= 5} ? 'text-warning' : 'text-secondary'"></i>
+			</div>
+		</div>
+		<div class="book-card d-flex align-items-center p-3 my-3" style="background-color: #ededed; width: fit-content; border-radius: 12px;" >
+			<!-- 책 이미지 -->
+			<div class="book-image me-3" th:if="${dto.bookdata != null}">
+			    <img th:src="${dto.bookdata.image}" alt="Book Cover"
+			         class="img-fluid rounded"
+			         style="width: 70px; height: 90px; object-fit: cover;">
+			</div>
+			<!-- 책 제목, 작가 -->
+			<div class="flex-grow-1" >
+				<h6 class="mb-1 fw-bold" th:text="${dto.bookdata?.title}">책 제목</h6>
+				<small class="text-muted" th:text="${dto.bookdata?.author}">작가</small>
+			</div>
+			<!-- 화살표 아이콘 -->
+			<div>
+				<a class="btn bi bi-chevron-right fs-4 text-secondary" th:href="@{|/books/${dto.bookdata?.id}|}"></a>
+			</div>
+		</div>
+		<div class="my-5">
+		    <div th:text="${dto.review_content}" 
+		         style="white-space: pre-wrap; background: none; border: none; padding: 0; font-size: 16px;"></div>
+		</div>
+
+		<div class="my-3" >
+			<th:block th:each="m : ${dto.medium}">
+				<a th:href="@{/review/reviewlist(tag=${m.name})}"
+				   style="padding: 5px 10px; background-color: #ffd77a; border-radius: 15%; margin-left: 5px; text-decoration: none; color: black;">
+				   #<span th:text="${m.name}"></span>
+				</a>
+			</th:block>
+		</div>
+		<hr>
+		<form th:action="@{/review/like/{id}(id=${dto.id})}" method="post">
+			<button type="submit" class="btn btn-block">
+				<i class="bi bi-heart-fill ms-2" style="color: #dd3333;"></i> <span
+					th:text="${#lists.size(dto.review_like)}"></span>
+			</button>
+		</form>
+	</div>
+</body>
+</html>

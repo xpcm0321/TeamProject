@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+				xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+				layout:decorate="~{fragments/layout}"
+				xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+><!-- layout:decorate="~{fragments/layout}" fragments폴더안에  layout 렌더링-->
+<head>
+<meta charset="UTF-8">
+<title>마이페이지</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+	<div class="container my-3">
+				<!-- 인가 : 권한 -->
+		<div class="card my-5 p-5" sec:authorize="hasRole('ADMIN')">
+		<h3 th:text="ADMINPAGE"></h3>
+		ADMIN ROLE
+		</div>
+		<div class="card my-5 p-5" sec:authorize="hasRole('MEMBER')">
+		<h3 th:text="MYPAGE"></h3>
+		MEMBER ROLE
+		</div>
+
+	</div>	
+</div>
+</body>
+</html>

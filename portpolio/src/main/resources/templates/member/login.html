@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko"	xmlns:th="http://www.thymeleaf.org" 
+				xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+				layout:decorate="~{fragments/layout}">	<!-- ##1 -->
+<head>
+<meta charset="UTF-8">
+<title>로그인</title>
+<style>
+	h3{
+		margin-bottom: 30px;
+	}
+   #btn-okay:hover{
+      background-color: rgb(109, 131, 80);
+   }
+   
+   #btn-cancel:hover{
+      color: white !important;
+      background-color: #889F69;
+   }
+   .login{
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin: 7px 7px;
+   }
+   .btn{
+      width: 100%;
+      height: 45px; 
+   }
+   .btn2{
+   	 margin-top: 20px;
+   }
+   .form-check-input:active{
+      background-color: #889F69;
+      border: solid 1px #374229;
+   }
+
+   .form-check-input:focus{
+      background-color: #889F69;
+   }
+   .find{
+   	margin-left: 5px;
+    color: gray;
+    text-decoration: none;
+   }
+</style>
+<!-- 눈 아이콘 css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+</head>
+<body>
+	<div class="p-5" layout:fragment="content">
+		<div style="width: 500px; border: 1px solid #D9D9D9; border-radius: 8px; margin: 16px 0px 16px 0px; padding: 48px; margin: 0 auto;">
+			<h3 style="text-align: center; font-weight: bold;">로그인</h3>
+
+			<form method="post" th:action="@{/member/login}">
+			
+			<div class="my-3">
+				<label for="username"	th:text="아이디"></label>
+				<input type="text"		name="username"		id="username"	class="form-control">
+			</div>
+			<div class="my-3">
+				<label for="password"	th:text="비밀번호"></label>
+				<div style="position: relative;">
+				<input type="password"	name="password"		id="password"	class="form-control">
+				<i class="fa-solid fa-eye-slash" id="togglePassword" 
+           				   style="position: absolute; top: 10px; right: 10px; cursor: pointer; color: #999;"></i>
+    			</div>
+			</div>
+			
+			<!-- 아이디/비밀번호가 다르면 나오는 알림! -->
+			<div th:if="${param.error}">
+				<div class="text-danger p-2" style="font-size:12px">아이디 또는 비밀번호가 잘못되었습니다. 아이디와 비밀번호를 확인해주세요.</div>
+			</div>
+			
+			<!-- 로그인버튼 -->
+			<div>
+			<input type="submit" class="btn btn1" value="로그인" id="btn-okay" style="color: white; background-color: #889F69;"/>
+           </div>
+           <!-- 로그인버튼 -->
+           
+			<div style="font-size: 12px;  text-align: right; margin-bottom: 20px;">
+				<a th:href="@{/member/find_id}" class="find">아이디 찾기</a>
+				<a th:href="@{/member/find_pass}" class="find">비밀번호 찾기</a>
+			</div>
+			<hr class="my-5"/>
+			
+			<!-- api로그인 버튼 start -->
+			<p style="text-align:center">SNS 계정으로 로그인</p>
+			<div class="social-login" style="display: flex; justify-content: center;">
+				<div class="kakao-login m-2" id="social-onclick" style="width: 50px; height: 50px; background-color: #FFE513; border-radius: 50%;">
+               <div>
+                  <a href="/oauth2/authorization/kakao">
+                     <img src="../images/kakao.png" alt="카카오로고" style="width:50px; height:50px; border-radius: 50%;" />
+                  </a>
+               </div>
+            </div>
+			<div class="naver-login m-2" id="social-onclick" style="width: 50px; height: 50px; background-color: #00BB00; border-radius: 50%;">
+					<div>
+					<a href="/oauth2/authorization/naver"> 
+						<img src="../images/naverLogo.png" alt="네이버로고" style="width:50px; height:50px;" /> <!-- 네이버로고는 remix icon에 없어서 이미지로 대체 -->
+					</a>
+					</div>
+			</div>
+			<div class="google-login m-2" id="social-onclick" style="width: 50px; height: 50px; background-color: #E83B2F; border-radius: 50%;">
+				<div>
+				<a href="/oauth2/authorization/google"> 
+					<img src="../images/googleLogo.png" alt="구글로고" style="width:50px; height:50px;" />
+				</a>
+				</div>
+				
+			</div>
+			</div>
+        	 <!-- api로그인 버튼 end -->
+        	 
+			<!-- 회원가입 버튼 -->
+         <div>
+             <a th:href="@{/member/join}" class="btn btn2" id="btn-cancel" style="color: #889F69; border-color: #889F69;">회원가입</a>
+         </div>
+			</form>
+			
+		</div>
+		<script th:inline="javascript">
+		 /* 이메일 중복 에러 처리 */
+	    const urlParams = new URL(location.href).searchParams;
+	    if (urlParams.get('emailError')) {
+	        alert('이미 가입된 이메일입니다.');
+	        history.replaceState(null, "", "/member/login");
+	    }
+
+		// 비밀번호 눈 아이콘 (toggle : 클래스를 추가/제거)
+	    const togglePassword = document.querySelector('#togglePassword');
+		const passwordInput = document.querySelector('#password');
+
+		togglePassword.addEventListener('click', function () {
+    		const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+   			passwordInput.setAttribute('type', type);
+
+   			// 아이콘 변경
+    		this.classList.toggle('fa-eye');
+   			this.classList.toggle('fa-eye-slash');
+			 });
+		
+		</script>
+		
+	</div>
+
+</body>
+</html>

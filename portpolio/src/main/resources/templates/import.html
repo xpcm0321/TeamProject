@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko"	xmlns:th="http://www.thymeleaf.org" 
+				xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title>가온누리</title>
+<!-- CKEditor 로드 -->
+<script src="//cdn.ckeditor.com/4.25.1/standard/ckeditor.js"></script> 
+<!-- Latest compiled and minified CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Latest compiled JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<style>
+</style>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="container my-5">
+			<h3 style="font-weight: bold;">리뷰</h3>
+			<!-- 입력한 데이터 구분용, 디자인 구현 시 시간 남으면 없앨 것 -->
+			<div class="" style="display: flex; margin-left: auto; min-width: 100px; max-width: 300px; margin-bottom: 15px;">
+				<input type="text" name="search" id="search" class="form-control me-2" placeholder="Search">
+				<input class="btn" type="button" name="searchbtn" id="searchbtn"
+						style="color: white; background-color: #889F69 !important;
+						padding: 8px 20px;" value="Search">
+				</div>
+			<table class="book_result table table-striped table-bordered table-hover text-center">
+				<caption>수정사항: 텍스트 수평 중앙 정렬, 검색바(요소) 오른쪽 정렬</caption>
+				<!-- 회원탈퇴하기?
+				<caption style="text-align: right;">MULTIBOARD-LIST</caption> -->
+				
+				<thead>
+					<tr>
+						<th scope="col">NO</th>
+						<th scope="col">TITLE</th>
+						<th scope="col">IMAGE</th>
+						<th scope="col">PUBLISHER</th>
+						<th scope="col">PUBDATE</th>
+						<th scope="col">IMPORT</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- ajax 호출 후 내용이 업데이트 될 영역 -->
+				</tbody>
+			</table>
+			<p class="text-end">
+				<a th:href="@{/board/insert}" class="btn" style="color: white; background-color: #889F69 !important; padding: 8px 20px;">글쓰기</a>
+			</p>
+		</div>
+	</div>
+<!-- 외부스크립트 -->
+<script th:inilne="javasrcipt">
+	$(function(){
+		ajax_api('검색어');
+		//(".book_result").hide();
+		
+	$("#searchbtn").on("click", function(){  // 키보드 누를때
+		let searchQuery = $("#search").val().trim();  //입력값 공백없이
+		if(searchQuery.length>0){  // 검색어가 공백이 아닌때 호출
+			$(".book_result").fadeIn();
+			ajax_api(searchQuery);
+			}
+		});
+	
+	$("#search").on("keyup" , function(){  // 키보드 누를때
+		let searchQuery = $(this).val().trim();  //입력값 공백없이
+		if(searchQuery.length>0){  // 검색어가 공백이 아닌때 호출
+			$(".book_result").fadeIn();
+			ajax_api(searchQuery);
+			} 
+		});
+	});
+	function ajax_api(search){
+		console.log(search); //작동확인용
+		$.ajax({
+			url: "/naver/booksapi/" + search, //책정보받을곳
+			type:"GET" , 
+			dataType:"json" , 
+			contentType:"application/json;charset=UTF-8",
+			error:function(xhr, status, msg){ alert(status + "/" + msg); } , 
+			success:function(json){ 
+				console.log(json); //작동확인용
+				
+				$(".book_result tbody").empty();
+				if(json&&json.items&&json.items.length>0){
+					let items = json.items;
+					
+					for(let i=0; i<items.length; i++){
+						//1. 데이터 가져오기
+						let title = items[i].title;
+						let image = items[i].image;
+						let author = items[i].author;
+						let publisher = items[i].publisher;
+						let pubdate = items[i].pubdate;
+//						let author = items[i].author; 		등록일은 어떻게... api에 없다
+//						let datetime = items[i].datetime;	필요할 경우 올린 날짜
+//						let like = items[i].like;			좋아요 정보
+						//let 추가하고 백틱 안에 <td> 추가
+						let row=`
+							<tr>
+								<td>${title}</td>
+								<td><img src="${image}" alt="${title}" style="width: 100px; height: auto;"/></td>
+								<td>${author}</td><button class="btn" type="button" style="color: white; background-color: #889F69 !important; padding: 20px;">등록</button>
+								<td>${publisher}</td><button class="btn" type="button" style="color: white; background-color: #889F69 !important; padding: 20px;">등록</button>
+								<td>${pubdate}</td><button class="btn" type="button" style="color: white; background-color: #889F69 !important; padding: 20px;">등록</button>
+							</tr>
+						`;
+						$(".book_result tbody").append(row);
+					}
+				} else {
+					console.log("empty");	//작동테스트용
+				}
+			}
+		});
+	}
+</script>
+</body>
+<!-- 외부스크립트 END -->
+</html>
