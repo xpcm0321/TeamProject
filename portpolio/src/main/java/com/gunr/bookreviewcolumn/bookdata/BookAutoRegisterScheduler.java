@@ -29,7 +29,7 @@ public class BookAutoRegisterScheduler {
     public void registerFromNaverApi() {
         try {
             // 1. 네이버 API에서 JSON 문자열 가져오기
-            String json = naverBooks.getApi(1, "히가시노 게이고");  // 빈 문자열로 보내면 "book"으로 처리
+            String json = naverBooks.getApi(1, "야구");  // 빈 문자열로 보내면 "book"으로 처리
 
             // 2. JSON → Map<String, Object> 파싱
             Map<String, Object> result = objectMapper.readValue(

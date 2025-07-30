@@ -172,7 +172,7 @@ public class MemberController {
 		 model.addAttribute("dto", member);
 		 
 		 model.addAttribute("member", member);
-		return "/member/mypage";
+		return "member/mypage";
 	}
 	
 	// 회원정보
